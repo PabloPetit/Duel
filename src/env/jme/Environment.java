@@ -1011,6 +1011,16 @@ public class Environment extends SimpleApplication {
 		return result;
 	}
 	
+	public ArrayList<Vector3f> filterWithVisionAngle(ArrayList<Vector3f> in,Vector3f dir, float maxAngle){
+		ArrayList<Vector3f> filtered = new ArrayList<>();
+		
+		for(Vector3f v3 : in){
+			//if(dir.angleBetween())
+		}
+		return null;
+		
+	}
+	
 	
 	public ArrayList<Vector3f> getGoldenSphere(int N){
 		ArrayList<Vector3f> points = new ArrayList<>();
