@@ -131,7 +131,6 @@ public class ExploreBehavior extends TickerBehaviour {
 		Vector3f best = null;
 		
 		for(Vector3f v3 : points){
-			System.out.println(v3);
 			if (v3.getY() > maxHeight){
 				best = v3;
 				maxHeight = v3.getY();

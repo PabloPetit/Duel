@@ -1065,8 +1065,6 @@ public class Environment extends SimpleApplication {
 				
 				Vector3f tmpV = shootRay(sp.getWorldTranslation(), cam.getDirection(), distance);
 				
-				//System.out.println(cam.getDirection());
-				
 				if(tmpV != null){
 					points.add(tmpV);
 				}
@@ -1088,30 +1086,12 @@ public class Environment extends SimpleApplication {
 		ray.setLimit(distance);
 		terrainNode.collideWith(ray, res);
 		
-		
 		//drawDebug(point, point.add(direction.mult(10f)));
 		
 		if (res.size()>0){
-			System.out.println("Col size : "+res.size());
 			return res.getCollision(0).getContactPoint();
-			
-			
 		}
 		
-		/*
-		if (res.size() > 0) {
-			int size = 0;
-			while (res.size() >= size && res.getCollision(size).getClass().equals(Geometry.class) ) {
-				size++;
-			}
-			if (res.size()>size+1) {
-				size++;
-			}
-			CollisionResult closest = res.getCollision(size);
-			if (closest.getGeometry().getClass().equals(TerrainPatch.class)) {
-				return closest.getContactPoint();
-			}		    
-		}*/
 		return null;
 	}
 	
