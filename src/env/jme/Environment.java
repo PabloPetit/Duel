@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import com.bulletphysics.collision.narrowphase.GjkEpaSolver.Results;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -75,6 +76,8 @@ public class Environment extends SimpleApplication {
 
 	private Node shootables;
 	private Node notshootables;
+	
+	private Node terrainNode;
 
 	//	private Camera cam1;
 	//	private Camera cam2;
@@ -175,6 +178,7 @@ public class Environment extends SimpleApplication {
 		//	    enemyNode = new Node("enemy");
 		bulletNode = new Node("bullet");
 		shootables = new Node("shootables");
+		terrainNode = new Node("terrainNode");
 		notshootables= new Node("notshootables");
 
 		//	    rootNode.attachChild(terrainNode);
@@ -183,7 +187,7 @@ public class Environment extends SimpleApplication {
 		rootNode.attachChild(bulletNode);
 		rootNode.attachChild(shootables);
 		rootNode.attachChild(notshootables);
-
+		rootNode.attachChild(terrainNode);
 
 		cam.setViewPort(0.0f, 1.0f, 0.6f, 1.0f);
 		cam.setLocation(new Vector3f(21.384611f, 146.78105f, 155.05727f));
@@ -261,6 +265,7 @@ public class Environment extends SimpleApplication {
 
 		//	    terrainNode.attachChild(terrain);
 		shootables.attachChild(terrain);
+		terrainNode.attachChild(terrain);
 
 	}
 
@@ -970,6 +975,69 @@ public class Environment extends SimpleApplication {
 		
 	}
 	
+	
+	
+	public ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N){
+		
+		ArrayList<Vector3f> goldenPoints = getGoldenSphere(N);
+		ArrayList<Vector3f> result = new ArrayList<>();
+		
+		Vector3f direction;
+		Vector3f position = sp.getWorldTranslation();
+		
+		System.out.println("Golden start : "+goldenPoints.size());
+		
+		for(Vector3f golden : goldenPoints){
+			
+			
+			golden = golden.add(position); // Should set the point around the player ?
+			
+			direction = position.subtract(golden).normalize(); // Vector pointing from the player to the exterior
+			
+			
+			//This may avoid collision with the player. Useless since terrainNode is the only collider considered
+			//position = sp.getWorldTranslation().add(direction.mult(3f)); 
+
+			
+			Vector3f rayHit = shootRay(position, direction, distance);
+			
+			if(rayHit != null){
+				result.add(rayHit);
+			}
+			
+		}
+		System.out.println("Golden finished : "+result.size());
+		
+		return result;
+	}
+	
+	
+	public ArrayList<Vector3f> getGoldenSphere(int N){
+		ArrayList<Vector3f> points = new ArrayList<>();
+				
+		double y,r,phi;
+		float X,Y,Z;
+		
+		double inc = (Math.PI * (3 - Math.sqrt(5d)));
+		double off = 2f / N;
+		
+		for(int k = 0;k < N; k ++){
+			
+			y = k * off - 1 + (off / 2f);
+			r = Math.sqrt(1 - y*y);
+			phi = k * inc;
+			
+			X = (float) (Math.cos(phi) * r);
+			Y = (float) y;
+			Z = (float) (Math.sin(phi)*r);
+			
+			points.add(new Vector3f(X,Y,Z));
+		}
+	
+		return points;
+	}
+	
+	
 	public ArrayList<Vector3f> sphereCast(Spatial sp, float angle, float distance, float precision){
 		ArrayList<Vector3f> points = new ArrayList<>();
 		
@@ -1017,19 +1085,20 @@ public class Environment extends SimpleApplication {
 		final Ray ray = new Ray();
 		ray.setOrigin(point);
 		ray.setDirection(direction);
-		//ray.setLimit(distance);
-		shootables.collideWith(ray, res);
+		ray.setLimit(distance);
+		terrainNode.collideWith(ray, res);
+		
+		
+		//drawDebug(point, point.add(direction.mult(10f)));
 		
 		if (res.size()>0){
+			System.out.println("Col size : "+res.size());
+			return res.getCollision(0).getContactPoint();
 			
-			Vector3f tmp = res.getCollision(0).getContactPoint();
 			
-			if (tmp.distance(point) > 2){
-				return tmp;
-			}
 		}
 		
-		
+		/*
 		if (res.size() > 0) {
 			int size = 0;
 			while (res.size() >= size && res.getCollision(size).getClass().equals(Geometry.class) ) {
@@ -1042,7 +1111,7 @@ public class Environment extends SimpleApplication {
 			if (closest.getGeometry().getClass().equals(TerrainPatch.class)) {
 				return closest.getContactPoint();
 			}		    
-		}
+		}*/
 		return null;
 	}
 	

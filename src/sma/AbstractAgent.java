@@ -96,6 +96,10 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return realEnv.sphereCast(sp, angle, distance, precision);
 	}
 	
+	public ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N){
+		return realEnv.goldenSphereCast(sp, distance, N);
+	}
+	
 	
 
 	/**

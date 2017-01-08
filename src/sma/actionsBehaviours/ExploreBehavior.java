@@ -48,7 +48,7 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	protected void onTick(){
 		
-		System.out.println("Height : "+agent.getCurrentPosition().getY());	
+		
 		
 		if (target == null && !setTarget()){ // if no target and no available target
 			randomMove();
@@ -115,6 +115,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		if(target != null){
 			agent.goTo(target, MoveMode.NORMAL);
 			System.out.println("New Target : "+target.toString());
+			System.out.println("From pos   : "+agent.getCurrentPosition().toString());
 		}
 		
 		return target != null;
@@ -122,12 +123,15 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	
 	Vector3f findOffensiveTarget(){
-		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), VISION_ANGLE, VISION_DISTANCE, CAST_PRECISION);
+		//ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), VISION_ANGLE, VISION_DISTANCE, CAST_PRECISION);
+		ArrayList<Vector3f> points = agent.goldenSphereCast(agent.getSpatial(), 3000f, 1000);
+		
 		
 		float maxHeight = -256;
 		Vector3f best = null;
 		
 		for(Vector3f v3 : points){
+			System.out.println(v3);
 			if (v3.getY() > maxHeight){
 				best = v3;
 				maxHeight = v3.getY();
