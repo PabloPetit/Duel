@@ -28,9 +28,9 @@ public class Principal {
 	public static void main(String[] args){
 
 		//0) Create the environment
-		//env = Environment.launchRandom(128);
+		env = Environment.launchRandom(128);
 		//env = Environment.launch("circleMap2");
-		env = Environment.launch("circleMap3");
+		//env = Environment.launch("circleMap3");
 		emptyPlatform(containerList);
 
 		//2) create agents and add them to the platform.

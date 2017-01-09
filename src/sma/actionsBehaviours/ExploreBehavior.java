@@ -51,6 +51,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		
 		if (target == null && !setTarget()){ // if no target and no available target
+			System.out.println("No target found");
 			randomMove();
 			return;
 		}
@@ -97,12 +98,6 @@ public class ExploreBehavior extends TickerBehaviour {
 	}
 	
 	boolean setTarget(){
-		
-		
-		if(agent.getCurrentPosition().getY() > -250f){
-			return false;
-		}
-		
 		
 		Type t = getNextTargetType();
 		
