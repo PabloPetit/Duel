@@ -11,6 +11,7 @@ import com.jme3.scene.Spatial;
 import dataStructures.tuple.Tuple2;
 import env.EnvironmentManager;
 import env.jme.Environment;
+import env.jme.NewEnv;
 import env.jme.Situation;
 import jade.core.AID;
 import jade.core.Agent;
@@ -39,13 +40,9 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	}
 
 	public  ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range){
-		return realEnv.getVisibleAgents(range);
+		return realEnv.getVisibleAgents(getLocalName(), range);
 	}
 
-
-	public void lookAt(LegalAction direction) {
-		this.realEnv.lookAt(getLocalName(), direction);
-	}
 
 	public boolean moveTo(Vector3f myDestination) {
 		return this.realEnv.moveTo(getLocalName(), myDestination);
@@ -69,13 +66,17 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return realEnv.adjusteHeight(in);
 	}
 
-	public boolean isVisible(String agent, String enemy){
-		return realEnv.isVisble(agent, enemy);
+	public boolean isVisible(String agent, String enemy, float distance){
+		return realEnv.isVisible(agent, enemy, distance);
 	}
 	
 	
-	public ArrayList<Vector3f> sphereCast(Spatial sp, float angle, float distance, float precision){
-		return realEnv.sphereCast(sp, angle, distance, precision);
+	public ArrayList<Vector3f> sphereCast(Spatial sp, float distance,  int N, float angle){
+		return realEnv.goldenSphereCast(sp, distance, N, angle);
+	}
+	
+	public ArrayList<Vector3f> sphereCast(Spatial sp, float distance,  int N){
+		return realEnv.goldenSphereCast(sp, distance, N);
 	}
 	
 	public ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N){
@@ -90,21 +91,27 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	/**
 	 * Deploy an agent tagged as a player
 	 */
-	public void deployAgent(Environment env) {
-		this.realEnv = env;
+	public void deployAgent(NewEnv args) {
+		this.realEnv = args;
 		this.realEnv.deployAgent(getLocalName(), "player");
 	}
 
 	/**
 	 * Deploy an agent tagged as an enemy
 	 */
-	public void deployEnemy(Environment env) {
+	public void deployEnemy(NewEnv env) {
 		this.realEnv = env;
 		this.realEnv.deployAgent(getLocalName(), "enemy");
 	}
 
 	protected void setup() {
 		super.setup();
+	}
+
+	@Override
+	public void deployAgent(Environment paramEnvironment) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

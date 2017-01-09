@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.jme3.app.SimpleApplication;
 
-import env.jme.Environment;
+import env.jme.NewEnv;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -14,21 +14,20 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import sma.agents.BasicAgent;
 import sma.agents.FinalAgent;
-import sma.agents.FollowAgent;
+
 
 public class Principal {
 	
 	private static String hostname = "127.0.0.1"; 
 	private static HashMap<String, ContainerController> containerList=new HashMap<String, ContainerController>();// container's name - container's ref
 	private static List<AgentController> agentList;// agents's ref
-	private static Environment env;// static ref of the real environment
+	private static NewEnv env;// static ref of the real environment
 
 	public static void main(String[] args){
 
 		//0) Create the environment
-		env = Environment.launchRandom(128);
+		env = NewEnv.launchRandom(128);
 		//env = Environment.launch("circleMap2");
 		//env = Environment.launch("circleMap3");
 		emptyPlatform(containerList);

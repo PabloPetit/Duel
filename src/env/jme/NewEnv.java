@@ -66,6 +66,8 @@ import sma.actionsBehaviours.LegalActions.Orientation;
 public class NewEnv extends SimpleApplication {
 
 
+	public static float MAX_DISTANCE;
+	
 	private final int LIFE = 9;
 	private final int DAMAGE = 3;
 
@@ -82,6 +84,7 @@ public class NewEnv extends SimpleApplication {
 	private Node bulletNode;
 	private Node terrainNode;
 	private Node playersNode;
+	
 
 
 	// Players
@@ -112,12 +115,14 @@ public class NewEnv extends SimpleApplication {
 		this.heightmap_tuplet =  TerrainTools.getPerlinAlgoMap(size);
 		bulletAppState = new BulletAppState();
 		bulletAppState.setSpeed(0.2f);
+		MAX_DISTANCE = heightmap_tuplet.getFirst();
 	}
 
 	public NewEnv(String filename){
 		this.heightmap_tuplet = TerrainTools.getHeightMapFromTxt(filename);
 		bulletAppState = new BulletAppState();
 		bulletAppState.setSpeed(0.2f);
+		MAX_DISTANCE = heightmap_tuplet.getFirst();
 	}
 
 	@Override
@@ -127,9 +132,10 @@ public class NewEnv extends SimpleApplication {
 		bulletNode = new Node("bullet");
 		terrainNode = new Node("terrainNode");
 		playersNode = new Node("players");
+	
 
 		rootNode.attachChild(bulletNode);
-		rootNode.attachChild(players);
+		rootNode.attachChild(playersNode);
 		rootNode.attachChild(terrainNode);
 
 		cam.setViewPort(0.0f, 1.0f, 0.6f, 1.0f);
@@ -186,6 +192,7 @@ public class NewEnv extends SimpleApplication {
 
 		terrain.addControl(new RigidBodyControl(0));
 		getPhysicsSpace().add(terrain.getControl(RigidBodyControl.class));
+
 
 		terrainNode.attachChild(terrain);
 
@@ -257,11 +264,9 @@ public class NewEnv extends SimpleApplication {
 			player.setUserData("life", LIFE);
 			player.setName(agentName);		      
 
-			players.attachChild(player);
-
+			playersNode.attachChild(player);
 
 			this.players.put(agentName, player);
-			this.lastActions.put(agentName, null);
 
 		}
 		return true;
@@ -294,7 +299,7 @@ public class NewEnv extends SimpleApplication {
 		if (players.containsKey(agent)) {
 			Spatial player = players.get(agent);
 			//if (!approximativeEquals(player.getWorldTranslation().x, dest.x) || !approximativeEquals(player.getWorldTranslation().z, dest.z) || !approximativeEquals(player.getWorldTranslation().y, dest.y)) {
-			if (player.getWorldTranslation.distance(dest) > 1f){
+			if (player.getWorldTranslation().distance(dest) > 1f){
 				player.getControl(PlayerControl.class).moveTo(dest);
 				return true;
 			}
@@ -331,12 +336,12 @@ public class NewEnv extends SimpleApplication {
 			Vector3f target = getCurrentPosition(enemy);
 			Vector3f dir = target.subtract(origin).normalize();
 			
-			if (isVisible(agent, enemy)) {
+			if (isVisible(agent, enemy, MAX_DISTANCE)) {
 
 				Random r = new Random();
 				float impact = impactProba(origin, target);
 
-				if ( r < impact){
+				if ( r.nextFloat() < impact){
 					// Target shot
 
 					int enemyLife = ((int)players.get(enemy).getUserData("life"))-DAMAGE;
@@ -370,14 +375,12 @@ public class NewEnv extends SimpleApplication {
 		float distCoeff = 0.8f; // Should be public static final 
 		float altCoeff = 0.2f;
 
-		float randomness = 0.95f
-
-		float maxDistance = heightmap_tuplet.getFirst();
+		float randomness = 0.95f;
 
 		float dist = origin.distance(target);
 		float altDiff = origin.getY() - target.getY();
 
-		float distValue = (maxDistance - dist ) / maxDistance;
+		float distValue = (MAX_DISTANCE - dist ) / MAX_DISTANCE;
 
 		float altValue = altDiff / 255f;
 
@@ -385,7 +388,7 @@ public class NewEnv extends SimpleApplication {
 	}
 	
 
-	private synchronized boolean isVisible(String agent, String enemy) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SOME STUFF O CHANGE
+	public synchronized boolean isVisible(String agent, String enemy, float distance) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SOME STUFF O CHANGE
 		Vector3f origin = getCurrentPosition(agent);
 		Vector3f target = getCurrentPosition(enemy);
 		Vector3f dir = target.subtract(origin).normalize();
@@ -394,43 +397,44 @@ public class NewEnv extends SimpleApplication {
 		bv.setCheckPlane(0);
 
 		if (((Camera)players.get(agent).getUserData("cam")).contains(bv).equals(FrustumIntersect.Inside)) { // in angle ??
-			Ray ray = new Ray(origin, dir);
-			ray.setLimit(FIELDOFVIEW);
-			CollisionResults results = new CollisionResults();
-			shootables.collideWith(ray, results);
-			if (results.size()>1) {
-				CollisionResult closest = results.getCollision(1);
-				if ( approximativeEqualsCoordinates(closest.getGeometry().getWorldTranslation(), players.get(enemy).getWorldTranslation())) {
-					if (origin.distance(target)<=FIELDOFVIEW) {
-						return true;
-					}
-				}
+			
+			Ray rayTerrain = new Ray(origin, dir);
+			Ray rayPlayers = new Ray(origin, dir);
+			
+			rayTerrain.setLimit(distance);
+			rayPlayers.setLimit(distance);
+			
+			
+			CollisionResults resultsTerrain = new CollisionResults();
+			CollisionResults resultsPlayers= new CollisionResults();
+			
+			terrainNode.collideWith(rayTerrain, resultsTerrain);
+			playersNode.collideWith(rayPlayers, resultsPlayers);
+			
+			Vector3f terrainHit = (resultsTerrain.size()==0)?null:resultsTerrain.getCollision(0).getContactPoint();
+			Vector3f playerHit = (resultsPlayers.size()==0)?null:resultsPlayers.getCollision(0).getContactPoint();
+			
+			if(resultsPlayers.size()!=0 && (resultsTerrain.size()==0 || origin.distance(playerHit) >  origin.distance(terrainHit))){
+				return true;
 			}
+			
 		}
 		return false;
 	}
 
 
-	public synchronized ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range){
+	public synchronized ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(String agentName, float range){
 
 		Vector3f agentPosition = getCurrentPosition(agentName);
 
 		ArrayList<Tuple2<Vector3f, String>> res = new ArrayList<>();
 
 		for (String enemy : players.keySet()) {
-
-			Vector3f enemyPosition = getCurrentPosition(enemy);
-			Vector3f dir = enemyPosition.subtract(agentPosition).normalize();
-			Ray ray = new Ray(agentPosition, dir);
-
-			ray.setLimit(range);
-			CollisionResults results = new CollisionResults();
-			players.collideWith(ray, results);
-
-			if (results.size()!=0){
-				CollisionResult closest = results.getCollision(0);
-				res.add(new Tuple2<Vector3f, String>(enemyPosition, enemy));
+			
+			if (isVisible(agentName, enemy, range)){
+				res.add(new Tuple2<Vector3f, String>(players.get(enemy).getWorldTranslation(), enemy));
 			}
+		
 		}
 		return res;
 	}
@@ -464,6 +468,11 @@ public class NewEnv extends SimpleApplication {
 		}
 		return result;
 	}
+	
+	public synchronized ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N, float angle){
+		return filterWithVisionAngle(goldenSphereCast(sp, distance, N), ((Camera)sp.getUserData("cam")).getDirection(), angle);
+	}
+	
 	
 	public synchronized ArrayList<Vector3f> filterWithVisionAngle(ArrayList<Vector3f> in,Vector3f dir, float maxAngle){  // @@@@@@@@@@@@@@@@@@@@@@@@@@@  NEED SOME TESTING
 		ArrayList<Vector3f> filtered = new ArrayList<>();

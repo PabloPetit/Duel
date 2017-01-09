@@ -14,6 +14,7 @@ import sma.InterestPoint.Type;
 import sma.actionsBehaviours.LegalActions.LegalAction;
 import sma.agents.FinalAgent;
 import sma.agents.FinalAgent.MoveMode;
+import weka.core.Debug;
 
 public class ExploreBehavior extends TickerBehaviour {
 
@@ -118,14 +119,15 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	
 	Vector3f findOffensiveTarget(){
-		//ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), VISION_ANGLE, VISION_DISTANCE, CAST_PRECISION);
-		ArrayList<Vector3f> points = agent.goldenSphereCast(agent.getSpatial(), 3000f, 1000);
 		
+		ArrayList<Vector3f> points = agent.goldenSphereCast(agent.getSpatial(), 3000f, 1000);
 		
 		float maxHeight = -256;
 		Vector3f best = null;
 		
 		for(Vector3f v3 : points){
+			
+			
 			if (v3.getY() > maxHeight){
 				best = v3;
 				maxHeight = v3.getY();

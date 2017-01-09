@@ -5,6 +5,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
 import env.jme.Environment;
+import env.jme.NewEnv;
 import sma.AbstractAgent;
 import sma.InterestPoint;
 import sma.actionsBehaviours.ExploreBehavior;
@@ -72,9 +73,9 @@ public class FinalAgent extends AbstractAgent{
 			this.friendorFoe = ((boolean)args[1]);
 			
 			if (friendorFoe) {
-				deployAgent((Environment) args[0]);
+				deployAgent((NewEnv) args[0]);
 			} else {
-				deployEnemy((Environment) args[0]);
+				deployEnemy((NewEnv) args[0]);
 			}
 			
 		}else{
