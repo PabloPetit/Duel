@@ -23,7 +23,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Environment realEnv;
+	private NewEnv realEnv;
 	
 	
 	public AbstractAgent() {
@@ -38,10 +38,11 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return this.realEnv.getDestination(getLocalName());
 	}
 
-	public Situation observeAgents() {
-		return this.realEnv.observe(getLocalName(), 10);
+	public  ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range){
+		return realEnv.getVisibleAgents(range);
 	}
-	
+
+
 	public void lookAt(LegalAction direction) {
 		this.realEnv.lookAt(getLocalName(), direction);
 	}
@@ -50,9 +51,6 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return this.realEnv.moveTo(getLocalName(), myDestination);
 	}
 	
-	public boolean cardinalMove(LegalAction direction) {
-		return this.realEnv.cardinalMove(getLocalName(), direction);
-	}
 
 	public boolean randomMove() {
 		return this.realEnv.randomMove(getLocalName());
@@ -62,23 +60,6 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return this.realEnv.shoot(getLocalName(), target);
 	}
 	
-	public void randomAction(String target) {
-		int randint = new Random().nextInt(LegalAction.values().length);
-		LegalAction[] actions = LegalAction.values();
-		LegalAction action = actions[randint];
-		System.out.println(getLocalName()+"'s action :"+action);
-		if (randint==0) {
-			shoot(target);
-		}
-		else if (randint < 9) {
-			cardinalMove(action);
-		}
-		else {
-			lookAt(action);
-		}
-	}
-	
-	
 	
 	public Spatial getSpatial(){
 		return realEnv.getSpatial(getLocalName());
@@ -87,10 +68,11 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	public Vector3f adjusteHeight(Vector3f in){
 		return realEnv.adjusteHeight(in);
 	}
-	
-	public Environment getEnvironement(){
-		return realEnv;
+
+	public boolean isVisible(String agent, String enemy){
+		return realEnv.isVisble(agent, enemy);
 	}
+	
 	
 	public ArrayList<Vector3f> sphereCast(Spatial sp, float angle, float distance, float precision){
 		return realEnv.sphereCast(sp, angle, distance, precision);
@@ -100,7 +82,10 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return realEnv.goldenSphereCast(sp, distance, N);
 	}
 	
-	
+
+	public float impactProba(Vector3f origin, Vector3f target){
+		return realEnv.impactProba(origin, target);
+	}
 
 	/**
 	 * Deploy an agent tagged as a player

@@ -27,24 +27,14 @@ public class PlayerControl extends CharacterControl{
 	private final float STEP = 2;
 	private Vector3f initialPosition;
 	private Vector3f direction;
-//	private float destY;
-//	private Vector3f lastPosition;
-//	private AnimChannel channel;
-	
-	
+
 	
 	public PlayerControl(CollisionShape shape, float stepHeight, TerrainQuad terrain) {
 		super(shape, stepHeight);
         this.terrain = terrain;
         	  
     }
-	
-//	public void setAnim(Spatial spatial) {
-//		AnimControl control = spatial.getControl(AnimControl.class);
-//	    channel = control.createChannel();
-//	    channel.setAnim("stand");	
-//	}
-	
+
 	public void update(float tpf) {
 		super.update(tpf);
 		
@@ -57,20 +47,16 @@ public class PlayerControl extends CharacterControl{
 				setViewDirection(dir.clone().setY(0));
 				dir.normalizeLocal();
 				dir.multLocal(0.8f);
-//				dir.setY(terrain.getHeightmapHeight(new Vector2f(dir.x,dir.z))-252);
 				setWalkDirection(dir);
 				cam.setLocation(this.spatial.getWorldTranslation());
 				cam.lookAtDirection(dir, Vector3f.UNIT_Y);
 				
 			}
 			else {
-//				System.out.println("arrived");
-//				channel.setAnim("stand");
 				setViewDirection(this.spatial.getWorldTranslation().clone().setY(0));
 				cam.setLocation(this.spatial.getWorldTranslation());
 				cam.lookAtDirection(getViewDirection(), Vector3f.UNIT_Y);
 				setWalkDirection(new Vector3f(0, 0, 0));
-//				setViewDirection(getViewDirection().setY(getViewDirection().y-0.5f));
 				this.ismoving = false;
 				this.destination = null;
 				
@@ -80,7 +66,6 @@ public class PlayerControl extends CharacterControl{
 		if (this.ismoving2) {
 			float distance = initialPosition.distance(this.spatial.getWorldTranslation());
 			if (distance < STEP) {
-//				System.out.println("moving");
 				setViewDirection(direction.setY(0));
 				direction.normalizeLocal();
 				direction.multLocal(0.8f);
@@ -89,7 +74,6 @@ public class PlayerControl extends CharacterControl{
 				cam.lookAtDirection(direction, Vector3f.UNIT_Y);
 			}
 			else {
-//				System.out.println("walked a step");
 				cam.setLocation(this.spatial.getWorldTranslation());
 				cam.lookAtDirection(getViewDirection(), Vector3f.UNIT_Y);
 				setWalkDirection(new Vector3f(0, 0, 0));
@@ -111,7 +95,6 @@ public class PlayerControl extends CharacterControl{
 	public void moveTo(Vector3f destination) {
 		this.destination = destination;
 		ismoving = true;
-//		channel.setAnim("Walk", 0.50f);
 	}
 	
 	public void move(Vector3f direction) {
@@ -123,19 +106,9 @@ public class PlayerControl extends CharacterControl{
 	public Vector3f getDestination() {
 		return destination;
 	}
-
-//	public void setDestination(Vector3f destination) {
-//		this.destination = destination;
-//		this.destY = destination.y;
-//		
-//	}
 	
 	public void setCam(Camera cam) {
 		this.cam = cam;
 	}
-	
-	
-	
-	
-	
+
 }

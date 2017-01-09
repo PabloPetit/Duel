@@ -70,22 +70,27 @@ public class NewEnv extends SimpleApplication {
 	private final int DAMAGE = 3;
 
 
+
+	// Scene Stuff
 	private BulletAppState bulletAppState;
 	public Tuple2<Integer, float[]> heightmap_tuplet;
 	private TerrainQuad terrain;
 	private Material mat_terrain;
-
-	private Node shootables;
-	private Node notshootables;
-	private Node terrainNode;
-
-
-	private HashMap<String, Spatial> players = new HashMap<String, Spatial>();
-	private HashMap<String, LegalAction> lastActions = new HashMap<String, LegalAction>();
-
-	private Node bulletNode;
-
 	private HashMap<String, Geometry> marks = new HashMap<String, Geometry>();
+
+	// Nodes :
+	private Node bulletNode;
+	private Node terrainNode;
+	private Node playersNode;
+
+
+	// Players
+	private HashMap<String, Spatial> players = new HashMap<String, Spatial>();
+
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ENVIRONEMENT CREATION @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 	public static NewEnv launch(String filename){
@@ -120,13 +125,11 @@ public class NewEnv extends SimpleApplication {
 		stateManager.attach(bulletAppState);
 
 		bulletNode = new Node("bullet");
-		shootables = new Node("shootables");
 		terrainNode = new Node("terrainNode");
-		notshootables= new Node("notshootables");
+		playersNode = new Node("players");
 
 		rootNode.attachChild(bulletNode);
-		rootNode.attachChild(shootables);
-		rootNode.attachChild(notshootables);
+		rootNode.attachChild(players);
 		rootNode.attachChild(terrainNode);
 
 		cam.setViewPort(0.0f, 1.0f, 0.6f, 1.0f);
@@ -184,10 +187,13 @@ public class NewEnv extends SimpleApplication {
 		terrain.addControl(new RigidBodyControl(0));
 		getPhysicsSpace().add(terrain.getControl(RigidBodyControl.class));
 
-		shootables.attachChild(terrain);
 		terrainNode.attachChild(terrain);
 
 	}
+
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AGENT DEPLOIMENT@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 	public synchronized boolean deployAgent(String agentName, String playertype) {
 		if (this.players.containsKey(agentName)) {
@@ -251,7 +257,7 @@ public class NewEnv extends SimpleApplication {
 			player.setUserData("life", LIFE);
 			player.setName(agentName);		      
 
-			shootables.attachChild(player);
+			players.attachChild(player);
 
 
 			this.players.put(agentName, player);
@@ -275,19 +281,24 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ WRONG
+
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AGENT FUNCTIONS@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
 
 	public synchronized boolean moveTo(String agent, Vector3f dest) {
 		if (players.containsKey(agent)) {
 			Spatial player = players.get(agent);
-			if (!approximativeEquals(player.getWorldTranslation().x, dest.x) || !approximativeEquals(player.getWorldTranslation().z, dest.z) || !approximativeEquals(player.getWorldTranslation().y, dest.y)) {
-				
+			//if (!approximativeEquals(player.getWorldTranslation().x, dest.x) || !approximativeEquals(player.getWorldTranslation().z, dest.z) || !approximativeEquals(player.getWorldTranslation().y, dest.y)) {
+			if (player.getWorldTranslation.distance(dest) > 1f){
 				player.getControl(PlayerControl.class).moveTo(dest);
-
 				return true;
 			}
 			else {
-				//				System.out.println("arrived");
 				return false;
 			}
 		}
@@ -296,7 +307,7 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
-	public synchronized boolean randomMove(String agent) {
+	public synchronized boolean randomMove(String agent) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SHOULD BE MODIFIED TO ALLOW RANGE SETTING @@@@@@@@@@@@@
 		if (players.containsKey(agent)) {
 			int max = heightmap_tuplet.getFirst()-(heightmap_tuplet.getFirst()%10);
 			int min = -max;
@@ -313,53 +324,68 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
-
-	public boolean shoot(String agent, String enemy) {
+	public synchronized boolean shoot(String agent, String enemy) {
 		if (players.containsKey(agent) && players.containsKey(enemy)) {
 
 			Vector3f origin = getCurrentPosition(agent);
 			Vector3f target = getCurrentPosition(enemy);
 			Vector3f dir = target.subtract(origin).normalize();
-
-			if (isVisible(agent, enemy)) {
 			
-				Random r = new Random();
+			if (isVisible(agent, enemy)) {
 
-				if (r.nextFloat()<0.7) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ WRONG WRONG WRONG @@@@@@@@@@@@@@@@@@@@@@
-					players.get(agent).getControl(PlayerControl.class).setViewDirection(dir);
-					Spatial bullet = getBullet();
-					bullet.setLocalTranslation(origin);
-					bullet.addControl(new BulletControl(dir));
-					bulletNode.attachChild(bullet);
-					System.out.println("bang");
+				Random r = new Random();
+				float impact = impactProba(origin, target);
+
+				if ( r < impact){
+					// Target shot
 
 					int enemyLife = ((int)players.get(enemy).getUserData("life"))-DAMAGE;
+
 					if (enemyLife<=0) {
+
+						// Dangerous zone here, simulation might crash
+
 						System.out.println(enemy+" killed.");
-						explode(target);
-						//			                	playersNode.detachChildNamed(enemy);
-						shootables.detachChildNamed(enemy);
-						rootNode.detachChild(marks.get(agent));
+						//explode(target);
+						//playersNode.detachChildNamed(enemy);
+						//rootNode.detachChild(marks.get(agent));
 						players.remove(enemy);
 					}
-					else {
-						players.get(enemy).setUserData("life", enemyLife);
-					}
+
 					return true;
+				}else{
+					// Target missed
 				}
-				else {
-					System.out.println("target missed");
-					return false;
-				}
+
+			}else{
+				// Agent not in sigth
 			}
+
 		}
 		return false;
 	}
 
+	public synchronized float impactProba(Vector3f origin, Vector3f target){
 
+		float distCoeff = 0.8f; // Should be public static final 
+		float altCoeff = 0.2f;
+
+		float randomness = 0.95f
+
+		float maxDistance = heightmap_tuplet.getFirst();
+
+		float dist = origin.distance(target);
+		float altDiff = origin.getY() - target.getY();
+
+		float distValue = (maxDistance - dist ) / maxDistance;
+
+		float altValue = altDiff / 255f;
+
+		return ( distValue * distCoeff + altValue * altCoeff ) * randomness; // If i did it right, shoumd be beetwen 0 and randomness 
+	}
 	
 
-	private boolean isVisible(String agent, String enemy) {
+	private synchronized boolean isVisible(String agent, String enemy) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SOME STUFF O CHANGE
 		Vector3f origin = getCurrentPosition(agent);
 		Vector3f target = getCurrentPosition(enemy);
 		Vector3f dir = target.subtract(origin).normalize();
@@ -367,8 +393,7 @@ public class NewEnv extends SimpleApplication {
 		BoundingVolume bv = players.get(enemy).getWorldBound();
 		bv.setCheckPlane(0);
 
-
-		if (((Camera)players.get(agent).getUserData("cam")).contains(bv).equals(FrustumIntersect.Inside)) {
+		if (((Camera)players.get(agent).getUserData("cam")).contains(bv).equals(FrustumIntersect.Inside)) { // in angle ??
 			Ray ray = new Ray(origin, dir);
 			ray.setLimit(FIELDOFVIEW);
 			CollisionResults results = new CollisionResults();
@@ -386,101 +411,36 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
-	private Vector3f maxAltitude(ArrayList<Vector3f> points) {
-		Vector3f highestPosition = points.remove(0);
-		float highest = highestPosition.y;
-		for (Vector3f v : points) {
-			if (v.y > highest) {
-				highestPosition = v;
-				highest = v.y;
-			}
-		}
-		return highestPosition;
-	}
-
-	private Vector3f minAltitude(ArrayList<Vector3f> points) {
-		Vector3f lowestPosition = points.remove(0);
-		float lowest = lowestPosition.y;
-		for (Vector3f v : points) {
-			if (v.y < lowest) {
-				lowestPosition = v;
-				lowest = v.y;
-			}
-		}
-		return lowestPosition;
-	}
-
-
-	private synchronized List<Tuple2<Vector3f, String>> observeAgents(String agentName) {
-
-		List<Tuple2<Vector3f, String>> res = new ArrayList();
+	public synchronized ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range){
 
 		Vector3f agentPosition = getCurrentPosition(agentName);
+
+		ArrayList<Tuple2<Vector3f, String>> res = new ArrayList<>();
+
 		for (String enemy : players.keySet()) {
+
 			Vector3f enemyPosition = getCurrentPosition(enemy);
 			Vector3f dir = enemyPosition.subtract(agentPosition).normalize();
 			Ray ray = new Ray(agentPosition, dir);
-			ray.setLimit(FIELDOFVIEW);
+
+			ray.setLimit(range);
 			CollisionResults results = new CollisionResults();
-			shootables.collideWith(ray, results);
-			//System.out.println("before : " + results.size());
-			if (results.size()>1){// A ray can be casted towards the enemy
-				//System.out.println("after : " + results.size());
-				CollisionResult closest = results.getCollision(1);// WAS 1 @@@@@@@@@@@@@@
-				// The enemy is within the FoV and not protected by the env
-				if (agentPosition.distance(enemyPosition)<=FIELDOFVIEW && closest.getGeometry().equals(players.get(enemy))) {
-					res.add(new Tuple2<Vector3f, String>(enemyPosition, enemy));
-				}
+			players.collideWith(ray, results);
+
+			if (results.size()!=0){
+				CollisionResult closest = results.getCollision(0);
+				res.add(new Tuple2<Vector3f, String>(enemyPosition, enemy));
 			}
 		}
 		return res;
 	}
 
 
-	private void explode(Vector3f coord) {
-		ParticleEmitter fire =
-				new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
-		Material mat_red = new Material(assetManager,
-				"Common/MatDefs/Misc/Particle.j3md");
-		mat_red.setTexture("Texture", assetManager.loadTexture(
-				"Effects/Explosion/flame.png"));
-		fire.setMaterial(mat_red);
-		fire.setLocalTranslation(coord);
-		fire.setImagesX(2);
-		fire.setImagesY(2); // 2x2 texture animation
-		fire.setEndColor(  new ColorRGBA(1f, 0f, 0f, 1f));   // red
-		fire.setStartColor(new ColorRGBA(1f, 1f, 0f, 0.5f)); // yellow
-		fire.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
-		fire.setStartSize(1.5f);
-		fire.setEndSize(0.1f);
-		fire.setGravity(0, 0, 0);
-		fire.setLowLife(1f);
-		fire.setHighLife(3f);
-		fire.getParticleInfluencer().setVelocityVariation(0.3f);
-		rootNode.attachChild(fire);
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RAY CASTING @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-		ParticleEmitter debris =
-				new ParticleEmitter("Debris", ParticleMesh.Type.Triangle, 10);
-		Material debris_mat = new Material(assetManager,
-				"Common/MatDefs/Misc/Particle.j3md");
-		debris_mat.setTexture("Texture", assetManager.loadTexture(
-				"Effects/Explosion/Debris.png"));
-		debris.setMaterial(debris_mat);
-		debris.setLocalTranslation(coord);
-		debris.setImagesX(3);
-		debris.setImagesY(3); // 3x3 texture animation
-		debris.setRotateSpeed(4);
-		debris.setSelectRandomImage(true);
-		debris.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 4, 0));
-		debris.setStartColor(ColorRGBA.White);
-		debris.setGravity(0, 6, 0);
-		debris.getParticleInfluencer().setVelocityVariation(.60f);
-		rootNode.attachChild(debris);
-		debris.emitAllParticles();
-	}
 
-	
-	
 	
 	public synchronized ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N){
 		
@@ -490,20 +450,11 @@ public class NewEnv extends SimpleApplication {
 		Vector3f direction;
 		Vector3f position = sp.getWorldTranslation();
 		
-		System.out.println("Golden start : "+goldenPoints.size());
 		
 		for(Vector3f golden : goldenPoints){
 			
-			
-			golden = golden.add(position); // Should set the point around the player ?
-			
-			direction = position.subtract(golden).normalize(); // Vector pointing from the player to the exterior
-			
-			
-			//This may avoid collision with the player. Useless since terrainNode is the only collider considered
-			//position = sp.getWorldTranslation().add(direction.mult(3f)); 
-
-			
+			golden = golden.add(position);
+			direction = position.subtract(golden).normalize(); 
 			Vector3f rayHit = shootRay(position, direction, distance);
 			
 			if(rayHit != null){
@@ -511,19 +462,18 @@ public class NewEnv extends SimpleApplication {
 			}
 			
 		}
-		System.out.println("Golden finished : "+result.size());
-		
 		return result;
 	}
 	
-	public synchronized ArrayList<Vector3f> filterWithVisionAngle(ArrayList<Vector3f> in,Vector3f dir, float maxAngle){
+	public synchronized ArrayList<Vector3f> filterWithVisionAngle(ArrayList<Vector3f> in,Vector3f dir, float maxAngle){  // @@@@@@@@@@@@@@@@@@@@@@@@@@@  NEED SOME TESTING
 		ArrayList<Vector3f> filtered = new ArrayList<>();
 		
 		for(Vector3f v3 : in){
-			//if(dir.angleBetween())
+			if(dir.angleBetween(v3) < maxAngle){
+				filtered.add(v3);
+			}
 		}
-		return null;
-		
+		return filtered;
 	}
 	
 	
@@ -598,5 +548,54 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
+
+
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ USELESS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+	private void explode(Vector3f coord) {
+		ParticleEmitter fire =
+				new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
+		Material mat_red = new Material(assetManager,
+				"Common/MatDefs/Misc/Particle.j3md");
+		mat_red.setTexture("Texture", assetManager.loadTexture(
+				"Effects/Explosion/flame.png"));
+		fire.setMaterial(mat_red);
+		fire.setLocalTranslation(coord);
+		fire.setImagesX(2);
+		fire.setImagesY(2); // 2x2 texture animation
+		fire.setEndColor(  new ColorRGBA(1f, 0f, 0f, 1f));   // red
+		fire.setStartColor(new ColorRGBA(1f, 1f, 0f, 0.5f)); // yellow
+		fire.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
+		fire.setStartSize(1.5f);
+		fire.setEndSize(0.1f);
+		fire.setGravity(0, 0, 0);
+		fire.setLowLife(1f);
+		fire.setHighLife(3f);
+		fire.getParticleInfluencer().setVelocityVariation(0.3f);
+		rootNode.attachChild(fire);
+
+		ParticleEmitter debris =
+				new ParticleEmitter("Debris", ParticleMesh.Type.Triangle, 10);
+		Material debris_mat = new Material(assetManager,
+				"Common/MatDefs/Misc/Particle.j3md");
+		debris_mat.setTexture("Texture", assetManager.loadTexture(
+				"Effects/Explosion/Debris.png"));
+		debris.setMaterial(debris_mat);
+		debris.setLocalTranslation(coord);
+		debris.setImagesX(3);
+		debris.setImagesY(3); // 3x3 texture animation
+		debris.setRotateSpeed(4);
+		debris.setSelectRandomImage(true);
+		debris.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 4, 0));
+		debris.setStartColor(ColorRGBA.White);
+		debris.setGravity(0, 6, 0);
+		debris.getParticleInfluencer().setVelocityVariation(.60f);
+		rootNode.attachChild(debris);
+		debris.emitAllParticles();
+	}
 
 }
