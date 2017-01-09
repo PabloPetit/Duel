@@ -32,14 +32,15 @@ public class PlayerControl extends CharacterControl{
 	public PlayerControl(CollisionShape shape, float stepHeight, TerrainQuad terrain) {
 		super(shape, stepHeight);
         this.terrain = terrain;
-        	  
+        this.setMaxSlope((float) (Math.PI*2d)); // Super Powers
     }
 
 	public void update(float tpf) {
 		super.update(tpf);
 		
 		if (this.ismoving) {
-			if (!equalsCoordinates(this.spatial.getWorldTranslation().x, destination.x) /*|| !equalsCoordinates(player.getWorldTranslation().z, dest.z)*/ || !equalsCoordinates(this.spatial.getWorldTranslation().z, destination.z)) {
+			//if (!equalsCoordinates(this.spatial.getWorldTranslation().x, destination.x) /*|| !equalsCoordinates(player.getWorldTranslation().z, dest.z)*/ || !equalsCoordinates(this.spatial.getWorldTranslation().z, destination.z)) {
+			if(spatial.getWorldTranslation().distance(destination)>1f){
 				Vector3f dir = this.destination.subtract(this.spatial.getWorldTranslation());
 				
 				dir.setY(dir.getY()+10);
@@ -62,7 +63,7 @@ public class PlayerControl extends CharacterControl{
 				
 			}
 		}
-		
+		/*
 		if (this.ismoving2) {
 			float distance = initialPosition.distance(this.spatial.getWorldTranslation());
 			if (distance < STEP) {
@@ -82,6 +83,8 @@ public class PlayerControl extends CharacterControl{
 				this.ismoving2 = false;
 			}
 		}
+		
+		*/
 	}
 	
 	private boolean equalsCoordinates(float a, float b) {

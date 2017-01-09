@@ -49,17 +49,17 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	protected void onTick(){
 		
-		
-		
-		if (target == null && !setTarget()){ // if no target and no available target
+		if (target == null && !setTarget()){ 
 			System.out.println("No target found");
 			randomMove();
 			return;
 		}
-		/*
-		if (agent.getCurrentPosition().distance(target) < 1f){
+		
+		System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target));
+		
+		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 2f){
 			Vector3f nei = findInterestingNeighbor();
-			if(nei != null){
+			if(nei != null && false){
 				target = nei;
 				agent.moveTo(target);
 			}else{
@@ -67,8 +67,6 @@ public class ExploreBehavior extends TickerBehaviour {
 				target = null;
 			}
 		}
-		*/
-		
 		
 	}
 	
@@ -87,15 +85,19 @@ public class ExploreBehavior extends TickerBehaviour {
 		if(targetType == Type.Offensive){
 			return findHighestNeighbor();
 		}else{
-			// find lower neighbor
+			return findLowestNeighbor();
 		}
-		return null;
 	}
-	
 
 	
 	Vector3f findHighestNeighbor(){
-		return null;
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
+		return getHighest(points);
+	}
+	
+	Vector3f findLowestNeighbor(){
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
+		return getLowest(points);
 	}
 	
 	boolean setTarget(){
@@ -111,35 +113,73 @@ public class ExploreBehavior extends TickerBehaviour {
 		if(target != null){
 			agent.goTo(target, MoveMode.NORMAL);
 			System.out.println("New Target : "+target.toString());
-			System.out.println("From pos   : "+agent.getCurrentPosition().toString());
 		}
 		
 		return target != null;
 	}
 	
-	
-	Vector3f findOffensiveTarget(){
-		
-		ArrayList<Vector3f> points = agent.goldenSphereCast(agent.getSpatial(), 3000f, 1000);
-		
+	Vector3f getHighest(ArrayList<Vector3f> points){
 		float maxHeight = -256;
 		Vector3f best = null;
 		
 		for(Vector3f v3 : points){
-			
-			
 			if (v3.getY() > maxHeight){
 				best = v3;
 				maxHeight = v3.getY();
 			}
 		}
-		
 		return best;
-		
 	}
 	
+	Vector3f getLowest(ArrayList<Vector3f> points){
+		float minHeight = 256;
+		Vector3f best = null;
+		
+		for(Vector3f v3 : points){
+			if (v3.getY() < minHeight){
+				best = v3;
+				minHeight = v3.getY();
+			}
+		}
+		return best;
+	}
+	
+	
+	Vector3f findOffensiveTarget(){
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.FAR_PRECISION, AbstractAgent.VISION_ANGLE);
+		
+		ArrayList<Vector3f> toRemove = new ArrayList<>();
+		
+		for(InterestPoint intPoint : agent.offPoints)
+			for(Vector3f point : points)
+				if(intPoint.isInInfluenceZone(point, Type.Offensive)){
+					toRemove.add(point);
+					System.out.println("In influence zone");
+				}
+					
+		
+		System.out.println("Removing done : "+points.size()+" R : "+toRemove.size());
+		
+		for (Vector3f v3 : toRemove){ points.remove(v3); }
+		
+		return getHighest(points);
+	}
+	
+	
 	Vector3f findDefensiveTarget(){
-		return null;
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.FAR_PRECISION, AbstractAgent.VISION_ANGLE);
+		
+		ArrayList<Vector3f> toRemove = new ArrayList<>();
+		
+		for(InterestPoint intPoint : agent.defPoints)
+			for(Vector3f point : points)
+				if(intPoint.isInInfluenceZone(point, Type.Defensive))
+					toRemove.add(point);
+				
+		
+		for (Vector3f v3 : toRemove){ points.remove(v3); }
+		
+		return getLowest(points);
 	}
 	
 	

@@ -20,11 +20,18 @@ import sma.actionsBehaviours.LegalActions.LegalAction;
 
 public class AbstractAgent extends Agent implements EnvironmentManager {
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private NewEnv realEnv;
+	
+	
+	public static final float VISION_ANGLE = 360f;
+	public static final float VISION_DISTANCE = 35f;
+	
+	public static final float NEIGHBORHOOD_DISTANCE = 10f;
+	
+	public static final int CLOSE_PRECISION = 100;
+	public static final int FAR_PRECISION = 1000;
 	
 	
 	public AbstractAgent() {
@@ -76,10 +83,6 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	}
 	
 	public ArrayList<Vector3f> sphereCast(Spatial sp, float distance,  int N){
-		return realEnv.goldenSphereCast(sp, distance, N);
-	}
-	
-	public ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N){
 		return realEnv.goldenSphereCast(sp, distance, N);
 	}
 	
