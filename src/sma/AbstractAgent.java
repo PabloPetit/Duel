@@ -55,6 +55,18 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return this.realEnv.moveTo(getLocalName(), myDestination);
 	}
 	
+	public void teleport(Vector3f dest){
+		realEnv.teleport(getLocalName(), dest);
+	}
+	
+	public Vector3f getRandomPosition(){
+		return realEnv.getRandomPosition();
+	}
+	
+	public void drawBox(Vector3f pos, int color){
+		realEnv.drawBox(pos, color);
+	}
+	
 
 	public boolean randomMove() {
 		return this.realEnv.randomMove(getLocalName());

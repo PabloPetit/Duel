@@ -200,7 +200,24 @@ public class NewEnv extends SimpleApplication {
 
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AGENT DEPLOIMENT@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@$
+	
+	
+	
+	public synchronized void drawBox(Vector3f pos, int color){
+		Box b  = new Box(2, 2, 2); 
+		Geometry player = new Geometry("Box", b);
+		player.setModelBound(new BoundingBox());
+		player.updateModelBound();
+		player.updateGeometricState();
+		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		mat.setColor("Color", ColorRGBA.Red);
+		player.setMaterial(mat);
+		player.scale(0.25f);
+		rootNode.attachChild(player);
+		//player.getWorldTranslation().set(pos);
+		player.setLocalTranslation(pos);
+	}
 
 	public synchronized boolean deployAgent(String agentName, String playertype) {
 		if (this.players.containsKey(agentName)) {
@@ -293,7 +310,16 @@ public class NewEnv extends SimpleApplication {
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-
+	public synchronized void teleport(String agent,Vector3f dest){
+		if (players.containsKey(agent)) {
+			Spatial player = players.get(agent);
+			player.getControl(PlayerControl.class).teleport(dest);;
+			
+		}
+		System.out.println("moveTo Error : the agent "+agent+" doesn't exist.");
+	}
+	
+	
 
 	public synchronized boolean moveTo(String agent, Vector3f dest) {
 		if (players.containsKey(agent)) {
@@ -328,6 +354,20 @@ public class NewEnv extends SimpleApplication {
 		return new Vector3f(in.x, terrain.getHeightmapHeight(new Vector2f(in.x, in.z))-255f, in.z);
 	}
 
+	
+	public synchronized Vector3f getRandomPosition(){
+		
+		float min =  - MAX_DISTANCE / 2f;
+		
+		Random r = new Random(System.currentTimeMillis());
+		
+		Vector3f res = new Vector3f(min + r.nextFloat() * MAX_DISTANCE, 0f, min + r.nextFloat() * MAX_DISTANCE);
+		
+		return adjusteHeight(res);
+		
+	}
+
+	
 
 	public synchronized boolean shoot(String agent, String enemy) {
 		if (players.containsKey(agent) && players.containsKey(enemy)) {

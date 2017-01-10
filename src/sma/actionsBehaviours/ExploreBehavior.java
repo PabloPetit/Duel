@@ -54,8 +54,8 @@ public class ExploreBehavior extends TickerBehaviour {
 			randomMove();
 			return;
 		}
-		
-		System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target));
+		System.out.println("Position : "+agent.getSpatial().getWorldTranslation());
+		System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target)+" OffSize : "+agent.offPoints.size());
 		
 		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 2f){
 			Vector3f nei = findInterestingNeighbor();
@@ -63,8 +63,10 @@ public class ExploreBehavior extends TickerBehaviour {
 				target = nei;
 				agent.moveTo(target);
 			}else{
+				
 				addInterestPoint();
 				target = null;
+				//targetType = null;
 			}
 		}
 		
@@ -74,9 +76,9 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	void addInterestPoint(){
 		if(targetType == Type.Offensive){
-			agent.offPoints.add(new InterestPoint(Type.Offensive,agent.getSpatial()));
+			agent.offPoints.add(new InterestPoint(Type.Offensive,agent));
 		}else{
-			agent.defPoints.add(new InterestPoint(Type.Defensive,agent.getSpatial()));
+			agent.defPoints.add(new InterestPoint(Type.Defensive,agent));
 		}
 	}
 	
@@ -112,6 +114,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		if(target != null){
 			agent.goTo(target, MoveMode.NORMAL);
+			targetType = t;
 			System.out.println("New Target : "+target.toString());
 		}
 		
@@ -152,13 +155,8 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		for(InterestPoint intPoint : agent.offPoints)
 			for(Vector3f point : points)
-				if(intPoint.isInInfluenceZone(point, Type.Offensive)){
+				if(intPoint.isInfluenceZone(point, Type.Offensive))
 					toRemove.add(point);
-					System.out.println("In influence zone");
-				}
-					
-		
-		System.out.println("Removing done : "+points.size()+" R : "+toRemove.size());
 		
 		for (Vector3f v3 : toRemove){ points.remove(v3); }
 		
@@ -173,7 +171,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		for(InterestPoint intPoint : agent.defPoints)
 			for(Vector3f point : points)
-				if(intPoint.isInInfluenceZone(point, Type.Defensive))
+				if(intPoint.isInfluenceZone(point, Type.Defensive))
 					toRemove.add(point);
 				
 		

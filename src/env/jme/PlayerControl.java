@@ -63,28 +63,15 @@ public class PlayerControl extends CharacterControl{
 				
 			}
 		}
-		/*
-		if (this.ismoving2) {
-			float distance = initialPosition.distance(this.spatial.getWorldTranslation());
-			if (distance < STEP) {
-				setViewDirection(direction.setY(0));
-				direction.normalizeLocal();
-				direction.multLocal(0.8f);
-				setWalkDirection(direction);
-				cam.setLocation(this.spatial.getWorldTranslation());
-				cam.lookAtDirection(direction, Vector3f.UNIT_Y);
-			}
-			else {
-				cam.setLocation(this.spatial.getWorldTranslation());
-				cam.lookAtDirection(getViewDirection(), Vector3f.UNIT_Y);
-				setWalkDirection(new Vector3f(0, 0, 0));
-				this.initialPosition = null;
-				this.direction = null;
-				this.ismoving2 = false;
-			}
-		}
+	}
+	
+	
+	public void teleport(Vector3f dest){
+		spatial.getWorldTranslation().set(dest);
+		cam.setLocation(this.spatial.getWorldTranslation());
+		ismoving = false;
+		destination = null;
 		
-		*/
 	}
 	
 	private boolean equalsCoordinates(float a, float b) {

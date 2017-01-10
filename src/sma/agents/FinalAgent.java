@@ -44,7 +44,9 @@ public class FinalAgent extends AbstractAgent{
 		explore = new ExploreBehavior(this, EXPLORE_PERIOD);
 		
 		addBehaviour(explore); // Prolog should order that
-		//addBehaviour(new TempSphereCast(this, 20));
+		
+		teleport(getRandomPosition());
+		
 	}
 	
 	public void goTo(Vector3f target, MoveMode mode){
