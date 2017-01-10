@@ -26,9 +26,9 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	
 	
 	public static final float VISION_ANGLE = 360f;
-	public static final float VISION_DISTANCE = 35f;
+	public static final float VISION_DISTANCE = 60f;
 	
-	public static final float NEIGHBORHOOD_DISTANCE = 10f;
+	public static final float NEIGHBORHOOD_DISTANCE = 15f;
 	
 	public static final int CLOSE_PRECISION = 100;
 	public static final int FAR_PRECISION = 1000;
@@ -46,8 +46,8 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 		return this.realEnv.getDestination(getLocalName());
 	}
 
-	public  ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range){
-		return realEnv.getVisibleAgents(getLocalName(), range);
+	public  ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range, float angle){
+		return realEnv.getVisibleAgents(getLocalName(), range, angle);
 	}
 
 

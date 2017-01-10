@@ -8,6 +8,9 @@ import com.jme3.scene.Spatial;
 
 public class InterestPoint {
 	
+	
+	public static final boolean DRAW_POINTS = true;
+	
 	public static enum Type {
 		Offensive,
 		Defensive;
@@ -21,15 +24,26 @@ public class InterestPoint {
 	public Vector3f position;
 	public float value;
 	
+	public long lastVisit;
+	
 	public InterestPoint(Type type, AbstractAgent agent){
 		this.type = type;
 		this.position = agent.getSpatial().getWorldTranslation().clone();
-		agent.drawBox(position, 0);
+		this.lastVisit = System.currentTimeMillis();
 		
 		if(type == Type.Offensive)
 			EvalDefendValue(agent);
 		else
 			EvalDefendValue(agent);
+		
+		if (DRAW_POINTS){
+			if( type == Type.Offensive){
+				agent.drawBox(position, 0);
+			}else{
+				agent.drawBox(position, 1);
+			}
+		}
+		
 	}
 	
 

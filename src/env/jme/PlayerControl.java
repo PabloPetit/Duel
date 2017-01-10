@@ -33,6 +33,7 @@ public class PlayerControl extends CharacterControl{
 		super(shape, stepHeight);
         this.terrain = terrain;
         this.setMaxSlope((float) (Math.PI*2d)); // Super Powers
+        
     }
 
 	public void update(float tpf) {

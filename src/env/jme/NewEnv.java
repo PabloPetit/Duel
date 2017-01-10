@@ -211,7 +211,12 @@ public class NewEnv extends SimpleApplication {
 		player.updateModelBound();
 		player.updateGeometricState();
 		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.Red);
+		if (color == 0){
+			mat.setColor("Color", ColorRGBA.Red);
+		}else if (color == 1){
+			mat.setColor("Color", ColorRGBA.Blue);
+		}
+		
 		player.setMaterial(mat);
 		player.scale(0.25f);
 		rootNode.attachChild(player);
@@ -383,7 +388,7 @@ public class NewEnv extends SimpleApplication {
 
 				if ( r.nextFloat() < impact){
 					// Target shot
-
+					System.out.println("KA POWW !!");
 					int enemyLife = ((int)players.get(enemy).getUserData("life"))-DAMAGE;
 
 					if (enemyLife<=0) {
@@ -428,7 +433,7 @@ public class NewEnv extends SimpleApplication {
 	}
 	
 
-	public synchronized boolean isVisible(String agent, String enemy, float distance) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SOME STUFF O CHANGE
+	public synchronized boolean isVisible(String agent, String enemy, float distance) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TODO : CHANGE TO ANGLE + CAST
 		Vector3f origin = getCurrentPosition(agent);
 		Vector3f target = getCurrentPosition(enemy);
 		Vector3f dir = target.subtract(origin).normalize();
@@ -463,15 +468,21 @@ public class NewEnv extends SimpleApplication {
 	}
 
 
-	public synchronized ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(String agentName, float range){
+	public synchronized ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(String agentName, float range, float angle){
 
-		Vector3f agentPosition = getCurrentPosition(agentName);
+		Spatial agentPosition = getSpatial(agentName);
+		
+		Vector3f camDir = ((Camera)players.get(agentName).getUserData("cam")).getDirection();
+		
 
 		ArrayList<Tuple2<Vector3f, String>> res = new ArrayList<>();
 
 		for (String enemy : players.keySet()) {
+			Spatial enemyPosition = getSpatial(agentName);
 			
-			if (isVisible(agentName, enemy, range)){
+			Vector3f dir = enemyPosition.getWorldTranslation().subtract(agentPosition.getWorldTranslation());
+			
+			if (isVisible(agentName, enemy, range) && camDir.angleBetween(dir) < angle){
 				res.add(new Tuple2<Vector3f, String>(players.get(enemy).getWorldTranslation(), enemy));
 			}
 		

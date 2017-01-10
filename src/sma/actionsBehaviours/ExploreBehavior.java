@@ -54,16 +54,16 @@ public class ExploreBehavior extends TickerBehaviour {
 			randomMove();
 			return;
 		}
-		System.out.println("Position : "+agent.getSpatial().getWorldTranslation());
-		System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target)+" OffSize : "+agent.offPoints.size());
+		//System.out.println("Position : "+agent.getSpatial().getWorldTranslation());
+		//System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target)+" OffSize : "+agent.offPoints.size());
 		
-		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 2f){
+		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE){
 			Vector3f nei = findInterestingNeighbor();
-			if(nei != null && false){
+			if(nei != null && agent.getCurrentPosition().distance(nei) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 5f){
+				System.out.println("Better Neighbor");
 				target = nei;
 				agent.moveTo(target);
 			}else{
-				
 				addInterestPoint();
 				target = null;
 				//targetType = null;
@@ -93,12 +93,12 @@ public class ExploreBehavior extends TickerBehaviour {
 
 	
 	Vector3f findHighestNeighbor(){
-		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.NEIGHBORHOOD_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
 		return getHighest(points);
 	}
 	
 	Vector3f findLowestNeighbor(){
-		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.VISION_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), AbstractAgent.NEIGHBORHOOD_DISTANCE, AbstractAgent.CLOSE_PRECISION, AbstractAgent.VISION_ANGLE);
 		return getLowest(points);
 	}
 	
