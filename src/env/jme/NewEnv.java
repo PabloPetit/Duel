@@ -408,7 +408,7 @@ public class NewEnv extends SimpleApplication {
 				}
 
 			}else{
-				// Agent not in sigth
+				// Agent not in sight
 			}
 
 		}

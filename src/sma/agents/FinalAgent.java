@@ -34,6 +34,10 @@ public class FinalAgent extends AbstractAgent{
 	public ExploreBehavior explore;
 	public HuntBehavior hunt;
 	
+	public boolean useProlog;
+	
+	public String lastAction = "idle";
+	
 	MoveMode mode = MoveMode.NORMAL;
 	
 	protected void setup(){

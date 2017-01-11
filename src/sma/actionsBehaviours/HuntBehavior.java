@@ -117,7 +117,7 @@ public class HuntBehavior extends TickerBehaviour {
 	public float evalutateInterestPoint(InterestPoint point, long time){
 		
 		float dist = agent.getSpatial().getWorldTranslation().distance(point.position);
-		long idleness = (time - point.lastVisit) / 1000;;
+		long idleness = (time - point.lastVisit) / 1000;
 		return NewEnv.MAX_DISTANCE - dist + 5 * Math.max(30 - idleness, 0); // Au pif
 		
 	}

@@ -792,7 +792,7 @@ public class Environment extends SimpleApplication {
 			}
 		}
 		
-		return new Situation(FIELDOFVIEW,(LegalAction)players.get(ag).getUserData("lastAction"), agentPos, lowestPosition, highestPosition, sum/nb, nb, maxDepth, heights.size()*1./nb, observeAgents(ag));
+		return null;//new Situation(FIELDOFVIEW,(LegalAction)players.get(ag).getUserData("lastAction"), agentPos, lowestPosition, highestPosition, sum/nb, nb, maxDepth, heights.size()*1./nb, observeAgents(ag));
 	}
 
 

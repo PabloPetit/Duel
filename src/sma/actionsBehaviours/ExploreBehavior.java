@@ -182,7 +182,10 @@ public class ExploreBehavior extends TickerBehaviour {
 	
 	
 	Type getNextTargetType(){
-		//Ask prolog which kind of interest Point we should look for
+		
+		if (agent.useProlog){
+			//return prolog call
+		}
 		return Type.Offensive;
 	}
 	
