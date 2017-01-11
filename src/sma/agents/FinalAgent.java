@@ -9,6 +9,7 @@ import env.jme.NewEnv;
 import sma.AbstractAgent;
 import sma.InterestPoint;
 import sma.actionsBehaviours.ExploreBehavior;
+import sma.actionsBehaviours.HuntBehavior;
 import sma.actionsBehaviours.TempSphereCast;
 
 public class FinalAgent extends AbstractAgent{
@@ -30,8 +31,10 @@ public class FinalAgent extends AbstractAgent{
 	public ArrayList<InterestPoint> offPoints;
 	public ArrayList<InterestPoint> defPoints;
 	
-	ExploreBehavior explore;
+	public ExploreBehavior explore;
+	public HuntBehavior hunt;
 	
+	MoveMode mode = MoveMode.NORMAL;
 	
 	protected void setup(){
 		super.setup();
@@ -49,7 +52,7 @@ public class FinalAgent extends AbstractAgent{
 		
 	}
 	
-	public void goTo(Vector3f target, MoveMode mode){
+	public void goTo(Vector3f target){
 		if (mode == MoveMode.NORMAL){
 			if (getDestination() != null && getDestination().equals(target)){
 				return; // ??
@@ -60,7 +63,7 @@ public class FinalAgent extends AbstractAgent{
 		}
 	}
 	
-	public void lookAt(Vector3f target, MoveMode mode){
+	public void lookAt(Vector3f target){
 		if (mode == MoveMode.NORMAL){
 			((Camera)getSpatial().getUserData("cam")).lookAt(target, Vector3f.UNIT_Y); // UNIT_Y should be alright ...
 		}else{

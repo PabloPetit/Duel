@@ -19,11 +19,18 @@ public class HuntBehavior extends TickerBehaviour {
 	
 	
 	InterestPoint target;
+	InterestPoint lastTarget;
 	
 	
 	public HuntBehavior(Agent a, long period) {
 		super(a, period);
 		agent = (FinalAgent)((AbstractAgent)a);
+	}
+	
+	public HuntBehavior(Agent a, long period, InterestPoint firstPoint) { // Called when getting back from Attack
+		super(a, period);
+		agent = (FinalAgent)((AbstractAgent)a);
+		target = firstPoint;
 	}
 
 	
@@ -33,10 +40,21 @@ public class HuntBehavior extends TickerBehaviour {
 	protected void onTick() {
 		
 		
-		Tuple2<Vector3f, String> enemy = checkEnemyInSight();
+		Tuple2<Vector3f, String> enemy = checkEnemyInSight(false);
+		
+		
+		if (target != null && agent.getSpatial().getWorldTranslation().distance(target.position) < 1f){
+			
+			target.lastVisit = System.currentTimeMillis();
+			lastTarget = target;
+			target = null;
+			enemy = checkEnemyInSight(true);
+			
+		}
 		
 		if (enemy != null){
-			// ALL WEAPONS OUT !!
+			//ASK prolog to chose between { Attack , Follow }
+			return;
 		}
 		
 		if (target == null){
@@ -45,18 +63,19 @@ public class HuntBehavior extends TickerBehaviour {
 			
 			if (point != null){
 				
-				//goto next
+				agent.goTo(point.position);
+				
 			}else{
-				// Go back to explore
+				// Go back to exploration
+				agent.addBehaviour(agent.explore);
+				stop();
 			}
-		}else if (true ){// distance target < X
-			//set time
 		}
 	}
 	
 	
-	public Tuple2<Vector3f, String> checkEnemyInSight(){
-		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents(AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
+	public Tuple2<Vector3f, String> checkEnemyInSight(boolean fullVision){
+		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents((fullVision)?360f:AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
 		
 		Tuple2<Vector3f, String> best = null;
 		float value = -1f;
@@ -84,7 +103,7 @@ public class HuntBehavior extends TickerBehaviour {
 		for (InterestPoint point : agent.offPoints){
 			
 			float tmp = evalutateInterestPoint(point, time);
-			if (tmp > value  && (target == null || (point != target))){
+			if (tmp > value  && (lastTarget == null || (point != lastTarget))){
 				best = point;
 				value = tmp;
 			}
@@ -102,8 +121,5 @@ public class HuntBehavior extends TickerBehaviour {
 		return NewEnv.MAX_DISTANCE - dist + 5 * Math.max(30 - idleness, 0); // Au pif
 		
 	}
-	
-	
-	
 
 }

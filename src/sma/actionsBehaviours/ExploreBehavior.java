@@ -113,7 +113,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		}
 		
 		if(target != null){
-			agent.goTo(target, MoveMode.NORMAL);
+			agent.goTo(target);
 			targetType = t;
 			System.out.println("New Target : "+target.toString());
 		}
