@@ -17,7 +17,7 @@ public class FinalAgent extends AbstractAgent{
 	
 	private static final long serialVersionUID = 5215165765928961044L;
 	
-	public static final long EXPLORE_PERIOD = 1000;
+	public static final long PERIOD = 1000;
 	
 	public enum MoveMode {
 		
@@ -36,19 +36,29 @@ public class FinalAgent extends AbstractAgent{
 	
 	public boolean useProlog;
 	
+	public int life;
+	public long lastHit;
+	public boolean dead;
+	
 	public String lastAction = "idle";
 	
 	MoveMode mode = MoveMode.NORMAL;
 	
 	protected void setup(){
 		super.setup();
-		
 		deploiment();
 		
 		offPoints = new ArrayList<>();
 		defPoints = new ArrayList<>();
 		
-		explore = new ExploreBehavior(this, EXPLORE_PERIOD);
+		this.life = AbstractAgent.MAX_LIFE;
+		this.dead = false;
+		this.lastHit = 0;
+		
+		
+		explore = new ExploreBehavior(this, PERIOD);
+		
+		addToAgents(this);
 		
 		addBehaviour(explore); // Prolog should order that
 		
@@ -59,7 +69,7 @@ public class FinalAgent extends AbstractAgent{
 	public void goTo(Vector3f target){
 		if (mode == MoveMode.NORMAL){
 			if (getDestination() != null && getDestination().equals(target)){
-				return; // ??
+				return; 
 			}
 			moveTo(target);
 		}else{

@@ -17,6 +17,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import sma.actionsBehaviours.LegalActions.LegalAction;
+import sma.agents.FinalAgent;
 
 public class AbstractAgent extends Agent implements EnvironmentManager {
 	
@@ -32,6 +33,9 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	
 	public static final int CLOSE_PRECISION = 100;
 	public static final int FAR_PRECISION = 1000;
+	
+	public static final int MAX_LIFE = 9;
+	public static final int SHOT_DAMAGE = 3;
 	
 	
 	public AbstractAgent() {
@@ -122,11 +126,15 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	protected void setup() {
 		super.setup();
 	}
+	
+	public void addToAgents(FinalAgent agent){
+		realEnv.addAgent(agent);
+	}
+	
 
 	@Override
 	public void deployAgent(Environment paramEnvironment) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 	
 }

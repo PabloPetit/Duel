@@ -52,9 +52,11 @@ import com.jogamp.opengl.math.geom.Frustum;
 
 import dataStructures.tuple.Tuple2;
 import env.terrain.TerrainTools;
+import sma.AbstractAgent;
 import sma.actionsBehaviours.LegalActions;
 import sma.actionsBehaviours.LegalActions.LegalAction;
 import sma.actionsBehaviours.LegalActions.Orientation;
+import sma.agents.FinalAgent;
 
 
 /**
@@ -89,6 +91,8 @@ public class NewEnv extends SimpleApplication {
 
 	// Players
 	private HashMap<String, Spatial> players = new HashMap<String, Spatial>();
+	
+	private HashMap<String, FinalAgent> agents = new HashMap<>();
 
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -224,6 +228,10 @@ public class NewEnv extends SimpleApplication {
 		player.setLocalTranslation(pos);
 	}
 
+	public synchronized void addAgent(FinalAgent agent){
+		agents.put(agent.getLocalName(), agent);
+	}
+	
 	public synchronized boolean deployAgent(String agentName, String playertype) {
 		if (this.players.containsKey(agentName)) {
 			System.out.println("DeployAgent Error : A player with the name '"+agentName+"' already exists.");
@@ -381,6 +389,8 @@ public class NewEnv extends SimpleApplication {
 			Vector3f target = getCurrentPosition(enemy);
 			Vector3f dir = target.subtract(origin).normalize();
 			
+			FinalAgent enemyAgent = agents.get(enemy);
+			
 			if (isVisible(agent, enemy, MAX_DISTANCE)) {
 
 				Random r = new Random();
@@ -389,16 +399,15 @@ public class NewEnv extends SimpleApplication {
 				if ( r.nextFloat() < impact){
 					// Target shot
 					System.out.println("KA POWW !!");
-					int enemyLife = ((int)players.get(enemy).getUserData("life"))-DAMAGE;
+					
+					enemyAgent.life -= AbstractAgent.SHOT_DAMAGE;
 
-					if (enemyLife<=0) {
+					if (enemyAgent.life <=0) {
 
 						// Dangerous zone here, simulation might crash
 
 						System.out.println(enemy+" killed.");
-						//explode(target);
-						//playersNode.detachChildNamed(enemy);
-						//rootNode.detachChild(marks.get(agent));
+						
 						players.remove(enemy);
 					}
 
@@ -521,15 +530,18 @@ public class NewEnv extends SimpleApplication {
 	}
 	
 	public synchronized ArrayList<Vector3f> goldenSphereCast(Spatial sp, float distance, int N, float angle){
-		return filterWithVisionAngle(goldenSphereCast(sp, distance, N), ((Camera)sp.getUserData("cam")).getDirection(), angle);
+		return filterWithVisionAngle(sp,goldenSphereCast(sp, distance, N), ((Camera)sp.getUserData("cam")).getDirection(), angle);
 	}
 	
 	
-	public synchronized ArrayList<Vector3f> filterWithVisionAngle(ArrayList<Vector3f> in,Vector3f dir, float maxAngle){  // @@@@@@@@@@@@@@@@@@@@@@@@@@@  NEED SOME TESTING
+	public synchronized ArrayList<Vector3f> filterWithVisionAngle(Spatial sp,ArrayList<Vector3f> in,Vector3f dir, float maxAngle){  // @@@@@@@@@@@@@@@@@@@@@@@@@@@  WRONGGGGGGGGGGGGGGG
 		ArrayList<Vector3f> filtered = new ArrayList<>();
-		
+		Vector3f position = sp.getWorldTranslation(), vTo;
 		for(Vector3f v3 : in){
-			if(dir.angleBetween(v3) < maxAngle){
+			
+			vTo = v3.subtract(position).normalize();
+			
+			if(dir.angleBetween(vTo) < maxAngle){
 				filtered.add(v3);
 			}
 		}

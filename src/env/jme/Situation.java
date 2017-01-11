@@ -63,7 +63,7 @@ public class Situation {
 	
 	
 	
-	public static Situation getActualSituation(FinalAgent a){
+	public static Situation getCurrentSituation(FinalAgent a){
 		Situation sit = new Situation();
 		
 		sit.offSize = a.offPoints.size();
@@ -106,8 +106,9 @@ public class Situation {
 		sit.maxAltitude = max;
 		sit.minAltitude = min;
 		sit.averageAltitude = averageAltitude;
-		
 		sit.currentAltitude = a.getSpatial().getWorldTranslation().getY();
+		
+		sit.fovValue = fovValue;
 		
 	}
 	
