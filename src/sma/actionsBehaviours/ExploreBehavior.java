@@ -1,11 +1,13 @@
 package sma.actionsBehaviours;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
+import env.jme.Situation;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import sma.AbstractAgent;
@@ -70,6 +72,12 @@ public class ExploreBehavior extends TickerBehaviour {
 			}
 		}
 		
+		
+		if( agent.offPoints.size()> 2){
+			agent.addBehaviour(new HuntBehavior(agent, 1000));
+			stop();
+		}
+		
 	}
 	
 	
@@ -116,6 +124,8 @@ public class ExploreBehavior extends TickerBehaviour {
 			agent.goTo(target);
 			targetType = t;
 			System.out.println("New Target : "+target.toString());
+			
+			agent.lastAction = (targetType==Type.Offensive)?Situation.EXPLORE_OFF:Situation.EXPLORE_DEF;
 		}
 		
 		return target != null;
@@ -186,6 +196,10 @@ public class ExploreBehavior extends TickerBehaviour {
 		if (agent.useProlog){
 			//return prolog call
 		}
+		
+		Random r = new Random();
+		
+		
 		return Type.Offensive;
 	}
 	

@@ -51,6 +51,8 @@ public class Situation {
 	
 	//
 	
+	
+	// TODO :::
 	public String lastAction;
 	
 	public int life;

@@ -6,6 +6,7 @@ import com.jme3.math.Vector3f;
 
 import dataStructures.tuple.Tuple2;
 import env.jme.NewEnv;
+import env.jme.Situation;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import sma.AbstractAgent;
@@ -31,6 +32,7 @@ public class HuntBehavior extends TickerBehaviour {
 		super(a, period);
 		agent = (FinalAgent)((AbstractAgent)a);
 		target = firstPoint;
+		System.out.println("Starting the Hunt");
 	}
 
 	
@@ -41,36 +43,48 @@ public class HuntBehavior extends TickerBehaviour {
 		
 		
 		Tuple2<Vector3f, String> enemy = checkEnemyInSight(false);
+		agent.lastAction = Situation.HUNT;
 		
+		if(target != null){
+			System.out.println("Distance to target : "+agent.getSpatial().getWorldTranslation().distance(target.position));
+		}else{
+			System.out.println("no target");
+		}
 		
-		if (target != null && agent.getSpatial().getWorldTranslation().distance(target.position) < 1f){
+		if (target != null && agent.getSpatial().getWorldTranslation().distance(target.position) < 5f){
 			
 			target.lastVisit = System.currentTimeMillis();
 			lastTarget = target;
 			target = null;
 			enemy = checkEnemyInSight(true);
+			System.out.println("CheckPoint !");
 			
 		}
 		
 		if (enemy != null){
+			System.out.println("Enemy in sight");
 			//ASK prolog to chose between { Attack , Follow }
 			return;
 		}
 		
 		if (target == null){
+			System.out.println("Looking for new target ...");
 			
 			InterestPoint point = findNextInterestPoint();
 			
 			if (point != null){
-				
+				target = point;
 				agent.goTo(point.position);
+				System.out.println("Found it : "+point.position);
 				
 			}else{
+				System.out.println("Back to explore");
 				// Go back to exploration
 				agent.addBehaviour(agent.explore);
 				stop();
 			}
 		}
+		
 	}
 	
 	
@@ -103,7 +117,7 @@ public class HuntBehavior extends TickerBehaviour {
 		for (InterestPoint point : agent.offPoints){
 			
 			float tmp = evalutateInterestPoint(point, time);
-			if (tmp > value  && (lastTarget == null || (point != lastTarget))){
+			if (tmp > value  && point != lastTarget){
 				best = point;
 				value = tmp;
 			}

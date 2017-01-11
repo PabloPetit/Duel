@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.Sys;
+
 import com.bulletphysics.collision.narrowphase.GjkEpaSolver.Results;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.jme3.animation.AnimChannel;
@@ -87,6 +89,7 @@ public class NewEnv extends SimpleApplication {
 	private Node terrainNode;
 	private Node playersNode;
 	
+	private Node camNode;
 
 
 	// Players
@@ -136,17 +139,18 @@ public class NewEnv extends SimpleApplication {
 		bulletNode = new Node("bullet");
 		terrainNode = new Node("terrainNode");
 		playersNode = new Node("players");
-	
+		camNode = new Node("cam");
 
 		rootNode.attachChild(bulletNode);
 		rootNode.attachChild(playersNode);
 		rootNode.attachChild(terrainNode);
+		rootNode.attachChild(camNode);
 
-		cam.setViewPort(0.0f, 1.0f, 0.6f, 1.0f);
+		//cam.setViewPort(0.0f, 1.0f, 0.6f, 1.0f);
 		cam.setLocation(new Vector3f(21.384611f, 146.78105f, 155.05727f));
 		cam.lookAtDirection(new Vector3f(-0.0016761336f, -0.9035275f, -0.42852688f), new Vector3f(-0.003530928f, 0.4285301f, -0.9035206f));
 
-		flyCam.setMoveSpeed(50);
+		flyCam.setMoveSpeed(100);
 
 		makeTerrain();
 
@@ -264,26 +268,40 @@ public class NewEnv extends SimpleApplication {
 			Material mat;
 			if (playertype.equals("player")) {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+				
+				
 				Camera cam1 = cam.clone();
 				cam1.setViewPort(0f, .5f, 0f, 0.6f);
 				cam1.setLocation(player.getLocalTranslation());
 				player.setUserData("cam", cam1);
+				
 				physicsPlayer.setCam(cam1);
 				ViewPort view1 = renderManager.createMainView("Bottom Left", cam1);
 				view1.setClearFlags(true, true, true);
-				view1.attachScene(rootNode);
+				
+				view1.attachScene(camNode);
+				
+				view1.setEnabled( false);
+				
 			}
 			else {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-				mat.setColor("Color", ColorRGBA.Red);
+				mat.setColor("Color", ColorRGBA.Cyan);
+				
+				
 				Camera cam2 = cam.clone();
 				cam2.setViewPort(.5f, 1f, 0f, 0.6f);
 				cam2.setLocation(player.getLocalTranslation());
 				player.setUserData("cam", cam2);
+				
 				physicsPlayer.setCam(cam2);
 				ViewPort view2 = renderManager.createMainView("Bottom Right", cam2);
 				view2.setClearFlags(true, true, true);
-				view2.attachScene(rootNode);
+				
+				
+				view2.attachScene(camNode);
+				
+				view2.setEnabled(false);
 			}
 
 			player.setMaterial(mat);
@@ -401,23 +419,24 @@ public class NewEnv extends SimpleApplication {
 					System.out.println("KA POWW !!");
 					
 					enemyAgent.life -= AbstractAgent.SHOT_DAMAGE;
+					enemyAgent.lastHit = System.currentTimeMillis();
 
 					if (enemyAgent.life <=0) {
-
+						enemyAgent.dead = true;
 						// Dangerous zone here, simulation might crash
 
 						System.out.println(enemy+" killed.");
-						
-						players.remove(enemy);
+						System.out.println("Simulation done");
+						System.exit(0);
 					}
 
 					return true;
 				}else{
-					// Target missed
+					System.out.println("Rhaa ! Missed");
 				}
 
 			}else{
-				// Agent not in sight
+				System.out.println("There is nobody to shoot here ...");
 			}
 
 		}

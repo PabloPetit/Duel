@@ -26,8 +26,8 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	private NewEnv realEnv;
 	
 	
-	public static final float VISION_ANGLE = 360f;
-	public static final float VISION_DISTANCE = 60f;
+	public static final float VISION_ANGLE = 180f;
+	public static final float VISION_DISTANCE = 35f;
 	
 	public static final float NEIGHBORHOOD_DISTANCE = 15f;
 	
@@ -106,6 +106,10 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	public float impactProba(Vector3f origin, Vector3f target){
 		return realEnv.impactProba(origin, target);
 	}
+	
+	public  boolean isVisible(String enemy, float distance){
+		return realEnv.isVisible(getLocalName(), enemy, distance);
+	}
 
 	/**
 	 * Deploy an agent tagged as a player
@@ -135,6 +139,10 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	@Override
 	public void deployAgent(Environment paramEnvironment) {
 		// TODO Auto-generated method stub	
+	}
+	
+	public Vector3f getEnemyLocation(String enemy){
+		return realEnv.getCurrentPosition(enemy);
 	}
 	
 }

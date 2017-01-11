@@ -8,6 +8,7 @@ import env.jme.Environment;
 import env.jme.NewEnv;
 import sma.AbstractAgent;
 import sma.InterestPoint;
+import sma.actionsBehaviours.DumbBehavior;
 import sma.actionsBehaviours.ExploreBehavior;
 import sma.actionsBehaviours.HuntBehavior;
 import sma.actionsBehaviours.TempSphereCast;
@@ -56,11 +57,10 @@ public class FinalAgent extends AbstractAgent{
 		this.lastHit = 0;
 		
 		
-		explore = new ExploreBehavior(this, PERIOD);
+		
 		
 		addToAgents(this);
 		
-		addBehaviour(explore); // Prolog should order that
 		
 		teleport(getRandomPosition());
 		
@@ -89,13 +89,19 @@ public class FinalAgent extends AbstractAgent{
 		final Object[] args = getArguments();
 		if(args[0]!=null && args[1]!=null){
 			
-			this.friendorFoe = ((boolean)args[1]);
 			
-			if (friendorFoe) {
-				deployAgent((NewEnv) args[0]);
-			} else {
-				deployEnemy((NewEnv) args[0]);
+			useProlog = ((boolean)args[1]);
+			
+			if(useProlog){
+				addBehaviour(new ExploreBehavior(this, PERIOD));
+			}else{
+				addBehaviour(new DumbBehavior(this, PERIOD));
 			}
+			
+			deployAgent((NewEnv) args[0]);
+			
+			System.out.println("Agent "+getLocalName()+" deployed !");
+			
 			
 		}else{
 			System.err.println("Malfunction during parameter's loading of agent"+ this.getClass().getName());

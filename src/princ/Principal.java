@@ -65,7 +65,7 @@ public class Principal {
 		containerList.putAll(createContainers(rt));
 
 		// 3) create monitoring agents : rma agent, used to debug and monitor the platform; sniffer agent, to monitor communications; 
-		createMonitoringAgents(mainContainerRef);
+		//createMonitoringAgents(mainContainerRef);
 
 		System.out.println("Plaform ok");
 		return rt;
@@ -88,81 +88,18 @@ public class Principal {
 
 		System.out.println("Launching containers ...");
 
-		//create the container0	
 		containerName="container0";
 		pContainer = new ProfileImpl(null, 8888, null);
 		System.out.println("Launching container "+pContainer);
 		containerRef = rt.createAgentContainer(pContainer); //ContainerController replace AgentContainer in the new versions of Jade.
 		containerList.put(containerName, containerRef);
 
-//		//create the container1	
-//		containerName="container1";
-//		pContainer = new ProfileImpl(null, 8888, null);
-//		System.out.println("Launching container "+pContainer);
-//		containerRef = rt.createAgentContainer(pContainer); //ContainerController replace AgentContainer in the new versions of Jade.
-//		containerList.put(containerName, containerRef);
-//
-//		//create the container2	
-//		containerName="container2";
-//		pContainer = new ProfileImpl(null, 8888, null);
-//		System.out.println("Launching container "+pContainer);
-//		containerRef = rt.createAgentContainer(pContainer); //ContainerController replace AgentContainer in the new versions of Jade.
-//		containerList.put(containerName, containerRef);
 
 		System.out.println("Launching containers done");
 		return containerList;
 	}
 
 
-	/**
-	 * create the monitoring agents (rma+sniffer) on the main-container given in parameter and launch them.
-	 *  - RMA agent's is used to debug and monitor the platform;
-	 *  - Sniffer agent is used to monitor communications
-	 * @param mc the main-container's reference
-	 * @return a ref to the sniffeur agent
-	 */
-	private static void createMonitoringAgents(ContainerController mc) {
-
-		System.out.println("Launching the rma agent on the main container ...");
-		AgentController rma;
-
-		try {
-			rma = mc.createNewAgent("rma", "jade.tools.rma.rma", new Object[0]);
-			rma.start();
-		} catch (StaleProxyException e) {
-			e.printStackTrace();
-			System.out.println("Launching of rma agent failed");
-		}
-
-		System.out.println("Launching  Sniffer agent on the main container...");
-		AgentController snif=null;
-
-		try {
-			snif= mc.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
-			snif.start();
-
-		} catch (StaleProxyException e) {
-			e.printStackTrace();
-			System.out.println("launching of sniffer agent failed");
-
-		}		
-
-
-	}
-	
-	/**********************************************
-	 * 
-	 * Methods used to create the agents and to start them
-	 * 
-	 **********************************************/
-
-
-	/**
-	 *  Creates the agents and add them to the agentList.  agents are NOT started.
-	 *@param containerList :Name and container's ref
-	 *@param sniff : a ref to the sniffeur agent
-	 *@return the agentList
-	 */
 	private static List<AgentController> createAgents(HashMap<String, ContainerController> containerList) {
 		System.out.println("Launching agents...");
 		ContainerController c;
@@ -174,31 +111,30 @@ public class Principal {
 		c = containerList.get("container0");
 		agentName="Player1";
 		try {
-
-
 			Object[] objtab=new Object[]{env, true};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName,FinalAgent.class.getName(),objtab);
 			agentList.add(ag);
 			System.out.println(agentName+" launched");
+			
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
-		/*
-		c = containerList.get("container0");
+		
+		
 		
 		agentName="Player2";
 		try {
 
 
 			Object[] objtab=new Object[]{env, false};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,BasicAgent.class.getName(),objtab);
+			AgentController	ag=c.createNewAgent("Kaiser Soze",FinalAgent.class.getName(),objtab);
 			agentList.add(ag);
 			System.out.println(agentName+" launched");
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
 		
-		*/
+		
 		System.out.println("Agents launched...");
 		return agentList;
 	}
