@@ -18,7 +18,7 @@ public class InterestPoint {
 	
 	public static float HEIGHT_COEFF = 1f;
 	
-	public static float INFLUENCE_ZONE = 20f;
+	public static float INFLUENCE_ZONE = 35f;
 	
 	public Type type;
 	public Vector3f position;
@@ -32,7 +32,7 @@ public class InterestPoint {
 		this.lastVisit = System.currentTimeMillis();
 		
 		if(type == Type.Offensive)
-			EvalDefendValue(agent);
+			EvalOffendValue(agent);
 		else
 			EvalDefendValue(agent);
 		
@@ -63,8 +63,17 @@ public class InterestPoint {
 		//value = agent.getSpatial().getWorldTranslation().y;
 	}
 	
-	public void EvalDefendValue(AbstractAgent agent){
-		value = - agent.getSpatial().getWorldTranslation().y;
+	public void EvalDefendValue(AbstractAgent agent){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ WRONG JUST A COPY
+		
+		ArrayList<Vector3f> points = agent.sphereCast(agent.getSpatial(), INFLUENCE_ZONE, AbstractAgent.FAR_PRECISION);
+		
+		int diff = AbstractAgent.FAR_PRECISION - points.size();
+		
+		value += diff * INFLUENCE_ZONE; 
+		
+		for (Vector3f point : points){
+			value += INFLUENCE_ZONE - position.distance(point);
+		}
 	}
 	
 	public boolean isInfluenceZone(Vector3f oth, Type othType){	

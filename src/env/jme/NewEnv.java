@@ -423,7 +423,6 @@ public class NewEnv extends SimpleApplication {
 
 					if (enemyAgent.life <=0) {
 						enemyAgent.dead = true;
-						// Dangerous zone here, simulation might crash
 
 						System.out.println(enemy+" killed.");
 						System.out.println("Simulation done");

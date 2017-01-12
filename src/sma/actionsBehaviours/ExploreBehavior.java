@@ -61,7 +61,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE){
 			Vector3f nei = findInterestingNeighbor();
-			if(nei != null && agent.getCurrentPosition().distance(nei) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 5f){
+			if(nei != null && agent.getCurrentPosition().distance(nei) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 2f){
 				System.out.println("Better Neighbor");
 				target = nei;
 				agent.moveTo(target);
@@ -74,8 +74,8 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		
 		if( agent.offPoints.size()> 2){
-			agent.addBehaviour(new HuntBehavior(agent, 1000));
-			stop();
+			//agent.addBehaviour(new HuntBehavior(agent, 1000));
+			//stop();
 		}
 		
 	}
@@ -199,6 +199,10 @@ public class ExploreBehavior extends TickerBehaviour {
 		
 		Random r = new Random();
 		
+		
+		if (r.nextFloat() < .3f){
+			return Type.Defensive;
+		}
 		
 		return Type.Offensive;
 	}

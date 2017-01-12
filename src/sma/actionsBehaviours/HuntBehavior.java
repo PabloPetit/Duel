@@ -42,7 +42,7 @@ public class HuntBehavior extends TickerBehaviour {
 	protected void onTick() {
 		
 		
-		Tuple2<Vector3f, String> enemy = checkEnemyInSight(false);
+		Tuple2<Vector3f, String> enemy = checkEnemyInSight(agent, false);
 		agent.lastAction = Situation.HUNT;
 		
 		if(target != null){
@@ -56,7 +56,7 @@ public class HuntBehavior extends TickerBehaviour {
 			target.lastVisit = System.currentTimeMillis();
 			lastTarget = target;
 			target = null;
-			enemy = checkEnemyInSight(true);
+			enemy = checkEnemyInSight(agent, true);
 			System.out.println("CheckPoint !");
 			
 		}
@@ -88,14 +88,14 @@ public class HuntBehavior extends TickerBehaviour {
 	}
 	
 	
-	public Tuple2<Vector3f, String> checkEnemyInSight(boolean fullVision){
+	public static Tuple2<Vector3f, String> checkEnemyInSight(FinalAgent agent, boolean fullVision){
 		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents((fullVision)?360f:AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
 		
 		Tuple2<Vector3f, String> best = null;
 		float value = -1f;
 		
 		for(Tuple2<Vector3f, String> enemy : enemies){
-			float tmp = evaluateEnemy(enemy);
+			float tmp = evaluateEnemy(agent, enemy);
 			if (tmp > value){
 				best = enemy;
 				value = tmp;
@@ -104,7 +104,7 @@ public class HuntBehavior extends TickerBehaviour {
 		return best;
 	}
 	
-	public float evaluateEnemy(Tuple2<Vector3f, String> enemy){
+	public static float evaluateEnemy(FinalAgent agent, Tuple2<Vector3f, String> enemy){
 		return NewEnv.MAX_DISTANCE - agent.getSpatial().getWorldTranslation().distance(enemy.getFirst());
 	}
 	

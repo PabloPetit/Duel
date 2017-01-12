@@ -10,6 +10,7 @@ import sma.AbstractAgent;
 import sma.InterestPoint;
 import sma.agents.FinalAgent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PrologBehavior extends TickerBehaviour {
@@ -29,13 +30,13 @@ public class PrologBehavior extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
-		String prolog = "consult('ressources/prolog/requete.pl')";
+		String prolog = "consult('/requete.pl')";
 		if (!Query.hasSolution(prolog)) {
 			System.out.println("Cannot open file " + prolog);
 		}
 		else {
 			Situation sit = Situation.getCurrentSituation(agent);
-			ArrayList<String> behavior = new ArrayList<String>();
+			List<String> behavior = Arrays.asList("explore_off", "explore_def", "hunt", "follow", "shoot", "retreat");
 			ArrayList<Object> terms = new ArrayList<Object>();
 
 			for (String b : behavior) {
@@ -64,11 +65,11 @@ public class PrologBehavior extends TickerBehaviour {
 					terms.add(sit.timeSinceLastShot);
 				}
 
-				String query = prologQuery(b, terms);
-				if (Query.hasSolution(query)) {
+				//String query = prologQuery(b, terms);
+				//if (Query.hasSolution(query)) {
 					// addBehavior
 					// break
-				}
+				//}
 			}
 		}
 	}
@@ -79,6 +80,30 @@ public class PrologBehavior extends TickerBehaviour {
 			query += t + ";";
 		}
 		return query.substring(0,query.length() - 1) + ")";
+	}
+
+	public void executeExploreOff() {
+		agent.addBehaviour(agent.explore);
+	}
+
+	public void executeExploreDef() {
+		agent.addBehaviour(agent.explore);
+	}
+
+	public void executeHunt() {
+		agent.addBehaviour(agent.hunt);
+	}
+
+	public void executeFollow() {
+		//agent.addBehaviour(agent.follow);
+	}
+
+	public void executeShoot() {
+		//agent.addBehaviour(agent.shoot);
+	}
+
+	public void executeRetreat() {
+		//agent.addBehaviour(agent.retreat);
 	}
 
 }

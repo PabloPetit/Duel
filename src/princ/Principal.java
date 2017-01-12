@@ -120,9 +120,7 @@ public class Principal {
 			e.printStackTrace();
 		}
 		
-		
-		
-		agentName="Player2";
+		/*
 		try {
 
 
@@ -133,6 +131,7 @@ public class Principal {
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 		
 		System.out.println("Agents launched...");

@@ -13,13 +13,14 @@ toShoot(Probability):-Probability>0.6.
 explore_off(OffSize, DefSize, MapWidth, Radius):
 	not(being_attacked(Time)),
 	explore_points(OffSize, DefSize),
-	areaCovered(MapWidth, Radius, OffSize)<20.
+	areaCovered(MapWidth, Radius, OffSize)<20,
+	jpl_call('PrologCalls', executeExploreOff, [], @(void)).
 
-explore_def(Life, OffSize, DefSize, MapWidth, Radius):
-	inGoodHealth(Life),
+explore_def(OffSize, DefSize, MapWidth, Radius):
 	not(being_attacked(Time)),
 	not(explore_points(offSize, DefSize))
-	areaCovered(MapWidth, Radius, DefSize)<20.
+	areaCovered(MapWidth, Radius, DefSize)<20,
+	jpl_call('PrologCalls', executeExploreDef, [], @(void)).
 
 hunt(Life, Time, OffSize, DefSize, MapWidth, Radius):
 	inGoodHealth(Life),
@@ -27,20 +28,24 @@ hunt(Life, Time, OffSize, DefSize, MapWidth, Radius):
 	not(areaCovered(MapWidth, Radius, OffSize)<20),
 	not(areaCovered(MapWidth, Radius, DefSize)<20);
 	being_attacked(Time),
-	EnemyInSight.
+	EnemyInSight,
+	jpl_call('PrologCalls', executeHunt, [], @(void)).
 
 follow(EnemyInSight, P):
 	inGoodHealth(Life),
 	being_attacked(Time),
 	EnemyInSight,
-	not(toShoot(P)).
+	not(toShoot(P)),
+	jpl_call('PrologCalls', executeFollow, [], @(void)).
 
 shoot(EnemyInSight, P):
 	inGoodHealth(Life),
 	being_attacked(Time),
 	EnemyInSight,
-	toShoot(P).
+	toShoot(P),
+	jpl_call('PrologCalls', executeShoot, [], @(void)).
 
 retreat(Life, Time):
 	not(inGoodHealth(Life)),
-	being_attacked(Time).
+	being_attacked(Time),
+	jpl_call('PrologCalls', executeRetreat, [], @(void)).
