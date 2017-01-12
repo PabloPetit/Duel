@@ -32,7 +32,7 @@ public class Principal {
 		//env = Environment.launch("circleMap3");
 		emptyPlatform(containerList);
 
-		//2) create agents and add them to the platform.
+		//2) create agents and add them to the platssSSSform.
 		agentList=createAgents(containerList);
 
 		//3) launch agents

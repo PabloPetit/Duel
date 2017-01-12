@@ -20,8 +20,8 @@ public class PlayerControl extends CharacterControl{
 	public TerrainQuad terrain;
 	private Camera cam;
 	// boolean for the destination-moving function
-	private boolean ismoving = false;
-	private Vector3f destination;
+	public boolean ismoving = false;
+	public Vector3f destination;
 	// boolean for the direction-moving function
 	private boolean ismoving2 = false;
 	private final float STEP = 2;

@@ -23,7 +23,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	
 	
 	private static final long serialVersionUID = 1L;
-	private NewEnv realEnv;
+	private NewEnv env;
 	
 	
 	public static final float VISION_ANGLE = 180f;
@@ -43,88 +43,92 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	}
 
 	public Vector3f getCurrentPosition() {
-		return this.realEnv.getCurrentPosition(getLocalName());
+		return this.env.getCurrentPosition(getLocalName());
 	}
 	
 	public Vector3f getDestination() {
-		return this.realEnv.getDestination(getLocalName());
+		return this.env.getDestination(getLocalName());
 	}
 
 	public  ArrayList<Tuple2<Vector3f, String>> getVisibleAgents(float range, float angle){
-		return realEnv.getVisibleAgents(getLocalName(), range, angle);
+		return env.getVisibleAgents(getLocalName(), range, angle);
+	}
+	
+	public void stopMoving(){
+		env.stopMoving(getLocalName());
 	}
 
 
 	public boolean moveTo(Vector3f myDestination) {
-		return this.realEnv.moveTo(getLocalName(), myDestination);
+		return this.env.moveTo(getLocalName(), myDestination);
 	}
 	
 	public void teleport(Vector3f dest){
-		realEnv.teleport(getLocalName(), dest);
+		env.teleport(getLocalName(), dest);
 	}
 	
 	public Vector3f getRandomPosition(){
-		return realEnv.getRandomPosition();
+		return env.getRandomPosition();
 	}
 	
 	public void drawBox(Vector3f pos, int color){
-		realEnv.drawBox(pos, color);
+		env.drawBox(pos, color);
 	}
 	
 
 	public boolean randomMove() {
-		return this.realEnv.randomMove(getLocalName());
+		return this.env.randomMove(getLocalName());
 	}
 
 	public boolean shoot(String target) {
-		return this.realEnv.shoot(getLocalName(), target);
+		return this.env.shoot(getLocalName(), target);
 	}
 	
 	
 	public Spatial getSpatial(){
-		return realEnv.getSpatial(getLocalName());
+		return env.getSpatial(getLocalName());
 	}
 	
 	public Vector3f adjusteHeight(Vector3f in){
-		return realEnv.adjusteHeight(in);
+		return env.adjusteHeight(in);
 	}
 
 	public boolean isVisible(String agent, String enemy, float distance){
-		return realEnv.isVisible(agent, enemy, distance);
+		return env.isVisible(agent, enemy, distance);
 	}
 	
 	
 	public ArrayList<Vector3f> sphereCast(Spatial sp, float distance,  int N, float angle){
-		return realEnv.goldenSphereCast(sp, distance, N, angle);
+		return env.goldenSphereCast(sp, distance, N, angle);
 	}
 	
 	public ArrayList<Vector3f> sphereCast(Spatial sp, float distance,  int N){
-		return realEnv.goldenSphereCast(sp, distance, N);
+		return env.goldenSphereCast(sp, distance, N);
 	}
 	
 
 	public float impactProba(Vector3f origin, Vector3f target){
-		return realEnv.impactProba(origin, target);
+		return env.impactProba(origin, target);
 	}
 	
 	public  boolean isVisible(String enemy, float distance){
-		return realEnv.isVisible(getLocalName(), enemy, distance);
+		return env.isVisible(getLocalName(), enemy, distance);
 	}
 
 	/**
 	 * Deploy an agent tagged as a player
 	 */
 	public void deployAgent(NewEnv args) {
-		this.realEnv = args;
-		this.realEnv.deployAgent(getLocalName(), "player");
+		this.env = args;
+		this.env.deployAgent(getLocalName(), "player");
 	}
 
 	/**
 	 * Deploy an agent tagged as an enemy
 	 */
 	public void deployEnemy(NewEnv env) {
-		this.realEnv = env;
-		this.realEnv.deployAgent(getLocalName(), "enemy");
+		this.env = env;
+		this.env.deployAgent(getLocalName(), "enemy");
 	}
 
 	protected void setup() {
@@ -132,7 +136,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	}
 	
 	public void addToAgents(FinalAgent agent){
-		realEnv.addAgent(agent);
+		env.addAgent(agent);
 	}
 	
 
@@ -142,7 +146,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	}
 	
 	public Vector3f getEnemyLocation(String enemy){
-		return realEnv.getCurrentPosition(enemy);
+		return env.getCurrentPosition(enemy);
 	}
 	
 }

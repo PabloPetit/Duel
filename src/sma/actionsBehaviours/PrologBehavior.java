@@ -19,6 +19,9 @@ public class PrologBehavior extends TickerBehaviour {
 	private static final long serialVersionUID = 5739600674796316846L;
 	
 	public static FinalAgent agent;
+	public static Class nextBehavior;
+	
+	public static Situation sit;
 	
 	
 	public PrologBehavior(Agent a, long period) {
@@ -35,79 +38,105 @@ public class PrologBehavior extends TickerBehaviour {
 			System.out.println("Cannot open file " + prolog);
 		}
 		else {
-			Situation sit = Situation.getCurrentSituation(agent);
-			List<String> behavior = Arrays.asList("explore_off", "explore_def", "hunt", "follow", "shoot", "retreat");
+			sit = Situation.getCurrentSituation(agent);
+			List<String> behavior = Arrays.asList("explore", "hunt", "attack", "retreat");
 			ArrayList<Object> terms = new ArrayList<Object>();
 
 			for (String b : behavior) {
 				terms.clear();
 				// Get parameters 
-				if (b.equals("explore_off") || b.equals("explore_def")) {
+				if (b.equals("explore")) {
 					terms.add(sit.timeSinceLastShot);
-					terms.add(sit.offSize);
-					terms.add(sit.defSize);
-					terms.add(NewEnv.MAX_DISTANCE);
+					terms.add(((ExploreBehavior.prlNextOffend)?sit.offSize:sit.defSize ));
 					terms.add(InterestPoint.INFLUENCE_ZONE);
+					terms.add(NewEnv.MAX_DISTANCE);
 				}
 				else if (b.equals("hunt")) {
 					terms.add(sit.life);
 					terms.add(sit.timeSinceLastShot);
 					terms.add(sit.offSize);
 					terms.add(sit.defSize);
-					terms.add(NewEnv.MAX_DISTANCE);
 					terms.add(InterestPoint.INFLUENCE_ZONE);
+					terms.add(NewEnv.MAX_DISTANCE);
 					terms.add(sit.enemyInSight);
-				}
-				else if (b.equals("follow") || b.equals("shoot")) {
+				}else if(b.equals("attack")){
 					terms.add(sit.life);
-					terms.add(sit.timeSinceLastShot);
 					terms.add(sit.enemyInSight);
 					terms.add(sit.impactProba);
 				}
-				else {
+				else { // RETREAT
 					terms.add(sit.life);
 					terms.add(sit.timeSinceLastShot);
 				}
 
 				String query = prologQuery(b, terms);
 				if (Query.hasSolution(query)) {
-					System.out.println("has solution");
+					//System.out.println("has solution");
+					setNextBehavior();
+
 				}
 			}
 		}
 	}
+	
+	
+	public void setNextBehavior(){
+		
+		if(agent.currentBehavior != null && nextBehavior == agent.currentBehavior.getClass()){
+			return;
+		}
+		if (agent.currentBehavior != null){
+			agent.removeBehaviour(agent.currentBehavior);
+		}
+		
+		if (nextBehavior == ExploreBehavior.class){
+			ExploreBehavior ex = new ExploreBehavior(agent, FinalAgent.PERIOD);
+			agent.addBehaviour(ex);
+			agent.currentBehavior = ex;
+			
+		}else if(nextBehavior == HuntBehavior.class){
+			HuntBehavior h = new HuntBehavior(agent, FinalAgent.PERIOD);
+			agent.currentBehavior = h;
+			agent.addBehaviour(h);
+			
+		}else if(nextBehavior == Attack.class){
+			Attack a = new Attack(agent, FinalAgent.PERIOD, HuntBehavior.checkEnemyInSight(agent, false).getSecond());
+			agent.currentBehavior = a;
+			agent.addBehaviour(a);
+		}
+		
+		
+	}
+	
 	
 	public String prologQuery(String behavior, ArrayList<Object> terms) {
 		String query = behavior + "(";
 		for (Object t: terms) {
 			query += t + ",";
 		}
-		System.out.println(query.substring(0,query.length() - 1) + ")");
 		return query.substring(0,query.length() - 1) + ")";
 	}
 
-	public static void executeExploreOff() {
-		agent.addBehaviour(agent.explore);
+	public static void executeExplore() {
+		//System.out.println("explore");
+		nextBehavior = ExploreBehavior.class;
 	}
 
-	public static void executeExploreDef() {
-		agent.addBehaviour(agent.explore);
-	}
 
 	public static void executeHunt() {
-		agent.addBehaviour(agent.hunt);
+		//System.out.println("hunt");
+		nextBehavior = HuntBehavior.class;
 	}
 
-	public static void executeFollow() {
-		//agent.addBehaviour(agent.follow);
+	public static void executeAttack() {
+		//System.out.println("attack");
+		nextBehavior = Attack.class;
 	}
 
-	public static void executeShoot() {
-		//agent.addBehaviour(agent.shoot);
-	}
 
 	public static void executeRetreat() {
-		//agent.addBehaviour(agent.retreat);
+		//System.out.println("retreat");
+		nextBehavior = RetreatBehavior.class;
 	}
 
 }

@@ -6,6 +6,7 @@ import com.jme3.renderer.Camera;
 
 import env.jme.Environment;
 import env.jme.NewEnv;
+import jade.core.behaviours.Behaviour;
 import sma.AbstractAgent;
 import sma.InterestPoint;
 import sma.actionsBehaviours.DumbBehavior;
@@ -46,8 +47,13 @@ public class FinalAgent extends AbstractAgent{
 	
 	MoveMode mode = MoveMode.NORMAL;
 	
+	public Behaviour currentBehavior;
+	
 	protected void setup(){
 		super.setup();
+		
+		addToAgents(this);
+		
 		deploiment();
 		
 		offPoints = new ArrayList<>();
@@ -58,9 +64,9 @@ public class FinalAgent extends AbstractAgent{
 		this.lastHit = 0;
 		
 		
+		currentBehavior = null;
 		
 		
-		addToAgents(this);
 		
 		
 		teleport(getRandomPosition());
@@ -74,13 +80,13 @@ public class FinalAgent extends AbstractAgent{
 			}
 			moveTo(target);
 		}else{
-			moveTo(target); // NIAHAHAHAHAHahahahahahHAHAhahHAhHAhAhahaha !!!
+			moveTo(target); 
 		}
 	}
 	
 	public void lookAt(Vector3f target){
 		if (mode == MoveMode.NORMAL){
-			((Camera)getSpatial().getUserData("cam")).lookAt(target, Vector3f.UNIT_Y); // UNIT_Y should be alright ...
+			((Camera)getSpatial().getUserData("cam")).lookAt(target, Vector3f.UNIT_Y); 
 		}else{
 			((Camera)getSpatial().getUserData("cam")).lookAt(target, Vector3f.UNIT_Y);
 		}
@@ -94,7 +100,7 @@ public class FinalAgent extends AbstractAgent{
 			useProlog = ((boolean)args[1]);
 			
 			if(useProlog){
-				//addBehaviour(new ExploreBehavior(this, PERIOD));
+				
 				addBehaviour(new PrologBehavior(this,PERIOD));
 			}else{
 				addBehaviour(new DumbBehavior(this, PERIOD));

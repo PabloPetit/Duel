@@ -1,5 +1,7 @@
 package sma.actionsBehaviours;
 
+import org.jpl7.Query;
+
 import com.jme3.math.Vector3f;
 
 import env.jme.Situation;
@@ -25,6 +27,7 @@ public class Attack extends TickerBehaviour{
 	public Attack(Agent a, long period, String enemy) {
 		super(a, period);
 		this.enemy = enemy;
+		lastPosition = agent.getEnemyLocation(enemy);
 		agent = (FinalAgent)((AbstractAgent)a);
 		openFire = false;
 	}
@@ -39,19 +42,22 @@ public class Attack extends TickerBehaviour{
 		if(agent.isVisible(enemy, AbstractAgent.VISION_DISTANCE)){
 			lastTimeSeen = System.currentTimeMillis();
 			lastPosition = agent.getEnemyLocation(enemy);
+			agent.lookAt(lastPosition);
 			
 			if (openFire){
 				System.out.println("Enemy visible, FIRE !");
 				agent.lastAction = Situation.SHOOT;
 				agent.shoot(enemy);
+				agent.stopMoving();
 			}
 			
-			// Get Closer ?
 			
 		}else{
 			
 			if (System.currentTimeMillis() - lastTimeSeen > FORGET_TIME * getPeriod()){
 				System.out.println("The enemy ran away");
+				agent.removeBehaviour(this);
+				agent.currentBehavior = null;
 			}
 			agent.lastAction = Situation.FOLLOW;
 			agent.goTo(lastPosition);
@@ -60,7 +66,11 @@ public class Attack extends TickerBehaviour{
 	}
 	
 	public static void askForFirePermission(){
-		openFire = true;
+		String query = "attack("+PrologBehavior.sit.life+","
+					+PrologBehavior.sit.enemyInSight +","
+					+PrologBehavior.sit.impactProba+")";
+		
+		openFire = Query.hasSolution(query);
 	}
 
 }

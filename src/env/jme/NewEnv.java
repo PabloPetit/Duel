@@ -266,9 +266,12 @@ public class NewEnv extends SimpleApplication {
 			player.updateGeometricState();
 			
 			Material mat;
-			if (playertype.equals("player")) {
+			
+			FinalAgent f = agents.get(agentName);
+			
+			if (f.useProlog) {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
-				
+				mat.setColor("Color", ColorRGBA.Green);
 				
 				Camera cam1 = cam.clone();
 				cam1.setViewPort(0f, .5f, 0f, 0.6f);
@@ -286,7 +289,7 @@ public class NewEnv extends SimpleApplication {
 			}
 			else {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-				mat.setColor("Color", ColorRGBA.Cyan);
+				mat.setColor("Color", ColorRGBA.DarkGray);
 				
 				
 				Camera cam2 = cam.clone();
@@ -350,12 +353,17 @@ public class NewEnv extends SimpleApplication {
 		System.out.println("moveTo Error : the agent "+agent+" doesn't exist.");
 	}
 	
-	
+	public synchronized void stopMoving(String agent){
+		if (players.containsKey(agent)) {
+			Spatial player = players.get(agent);
+			((PlayerControl)player.getControl(PlayerControl.class)).destination = null;
+			((PlayerControl)player.getControl(PlayerControl.class)).ismoving = false;
+		}
+	}
 
 	public synchronized boolean moveTo(String agent, Vector3f dest) {
 		if (players.containsKey(agent)) {
 			Spatial player = players.get(agent);
-			//if (!approximativeEquals(player.getWorldTranslation().x, dest.x) || !approximativeEquals(player.getWorldTranslation().z, dest.z) || !approximativeEquals(player.getWorldTranslation().y, dest.y)) {
 			if (player.getWorldTranslation().distance(dest) > 1f){
 				player.getControl(PlayerControl.class).moveTo(dest);
 				return true;

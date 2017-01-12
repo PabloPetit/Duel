@@ -63,7 +63,10 @@ public class HuntBehavior extends TickerBehaviour {
 		
 		if (enemy != null){
 			System.out.println("Enemy in sight");
-			//ASK prolog to chose between { Attack , Follow }
+			agent.removeBehaviour(this);
+			Attack a = new Attack(agent, FinalAgent.PERIOD, enemy.getSecond());
+			agent.currentBehavior = a;
+			agent.addBehaviour(a);
 			return;
 		}
 		
@@ -78,9 +81,9 @@ public class HuntBehavior extends TickerBehaviour {
 				System.out.println("Found it : "+point.position);
 				
 			}else{
-				System.out.println("Back to explore");
-				// Go back to exploration
-				agent.addBehaviour(agent.explore);
+				ExploreBehavior ex = new ExploreBehavior(agent, FinalAgent.PERIOD);
+				agent.currentBehavior = ex;
+				agent.addBehaviour(ex);
 				stop();
 			}
 		}

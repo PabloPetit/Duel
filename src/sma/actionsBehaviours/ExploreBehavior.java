@@ -3,6 +3,8 @@ package sma.actionsBehaviours;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.jpl7.Query;
+
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -22,12 +24,17 @@ public class ExploreBehavior extends TickerBehaviour {
 
 	
 	private static final long serialVersionUID = 4958939169231338495L;
+	
 	public static final float RANDOM_MAX_DIST = 10f;
 	public static final int RANDOM_REFRESH = 20;
 	
 	public static final float VISION_ANGLE = 360f;
 	public static final float VISION_DISTANCE = 350f;
 	public static final float CAST_PRECISION = 2f;
+	
+	
+	
+	public static boolean prlNextOffend;
 	
 	
 	FinalAgent agent;
@@ -45,7 +52,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		target = null;
 		randDate = 0;
 		time = System.currentTimeMillis();
-		
+		prlNextOffend = true;
 	}
 
 	
@@ -56,8 +63,6 @@ public class ExploreBehavior extends TickerBehaviour {
 			randomMove();
 			return;
 		}
-		//System.out.println("Position : "+agent.getSpatial().getWorldTranslation());
-		//System.out.println("Distance to target : "+agent.getCurrentPosition().distance(target)+" OffSize : "+agent.offPoints.size());
 		
 		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE){
 			Vector3f nei = findInterestingNeighbor();
@@ -70,12 +75,6 @@ public class ExploreBehavior extends TickerBehaviour {
 				target = null;
 				//targetType = null;
 			}
-		}
-		
-		
-		if( agent.offPoints.size()> 2){
-			//agent.addBehaviour(new HuntBehavior(agent, 1000));
-			//stop();
 		}
 		
 	}
@@ -194,17 +193,15 @@ public class ExploreBehavior extends TickerBehaviour {
 	Type getNextTargetType(){
 		
 		if (agent.useProlog){
-			//return prolog call
+			String query = "explore_points("+agent.offPoints.size()+","+agent.defPoints.size()+")";
+			if (Query.hasSolution(query)) {
+				prlNextOffend = false;
+			}else{
+				prlNextOffend = true;
+			}
 		}
 		
-		Random r = new Random();
-		
-		
-		if (r.nextFloat() < .3f){
-			return Type.Defensive;
-		}
-		
-		return Type.Offensive;
+		return (prlNextOffend)?Type.Offensive : Type.Defensive;
 	}
 	
 	
