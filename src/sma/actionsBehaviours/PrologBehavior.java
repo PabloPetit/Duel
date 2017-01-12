@@ -65,7 +65,7 @@ public class PrologBehavior extends TickerBehaviour {
 				}else if(b.equals("attack")){
 					//terms.add(sit.life);
 					terms.add(sit.enemyInSight);
-					terms.add(sit.impactProba);
+					//terms.add(sit.impactProba);
 				}
 				else { // RETREAT
 					terms.add(sit.life);

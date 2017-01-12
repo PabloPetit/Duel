@@ -35,9 +35,8 @@ toOpenFire(EnemyInSight,P):-
 	shotImpact(P),
 	EnemyInSight.
 
-attack(EnemyInSight,P):-
+attack(EnemyInSight):-
 	EnemyInSight,
-	shotImpact(P),
 	jpl_call('sma.actionsBehaviours.PrologBehavior',executeAttack,[],@(void)).
 
 

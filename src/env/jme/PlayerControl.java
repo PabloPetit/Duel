@@ -44,7 +44,7 @@ public class PlayerControl extends CharacterControl{
 			if(spatial.getWorldTranslation().distance(destination)>1f){
 				Vector3f dir = this.destination.subtract(this.spatial.getWorldTranslation());
 				
-				dir.setY(dir.getY()+10);
+				dir.setY(dir.getY()+15);
 				
 				setViewDirection(dir.clone().setY(0));
 				dir.normalizeLocal();

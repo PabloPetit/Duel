@@ -92,7 +92,7 @@ public class HuntBehavior extends TickerBehaviour {
 	
 	
 	public static Tuple2<Vector3f, String> checkEnemyInSight(FinalAgent agent, boolean fullVision){
-		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents((fullVision)?360f:AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
+		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents((fullVision)?(float)(Math.PI*2f):AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
 		
 		Tuple2<Vector3f, String> best = null;
 		float value = -1f;

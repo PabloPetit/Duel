@@ -480,7 +480,7 @@ public class NewEnv extends SimpleApplication {
 		BoundingVolume bv = players.get(enemy).getWorldBound();
 		bv.setCheckPlane(0);
 		
-		Camera cam = ((Camera)players.get(agent).getUserData("cam");
+		Camera cam = ((Camera)players.get(agent).getUserData("cam"));
 
 		if (cam.getDirection().angleBetween(dir) < AbstractAgent.VISION_ANGLE) { // in angle ??
 			

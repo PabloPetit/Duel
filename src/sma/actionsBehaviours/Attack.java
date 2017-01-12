@@ -68,7 +68,7 @@ public class Attack extends TickerBehaviour{
 	}
 	
 	public static void askForFirePermission(){
-		String query = "attack("
+		String query = "toOpenFire("
 					+PrologBehavior.sit.enemyInSight +","
 					+PrologBehavior.sit.impactProba+")";
 		

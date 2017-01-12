@@ -26,7 +26,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	private NewEnv env;
 	
 	
-	public static final float VISION_ANGLE = 150f;
+	public static final float VISION_ANGLE = 3f; //Radians
 	public static final float VISION_DISTANCE = 25f;
 	
 	public static final float NEIGHBORHOOD_DISTANCE = 12f;
