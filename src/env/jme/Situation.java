@@ -8,6 +8,7 @@ import com.jme3.math.Vector3f;
 import dataStructures.tuple.Tuple2;
 import sma.AbstractAgent;
 import sma.InterestPoint;
+import sma.actionsBehaviours.HuntBehavior;
 import sma.actionsBehaviours.LegalActions.LegalAction;
 import sma.agents.FinalAgent;
 
@@ -83,6 +84,12 @@ public class Situation {
 		
 		sit.lastAction = a.lastAction;
 		
+		sit.life = a.life;
+		sit.timeSinceLastShot = (int) (System.currentTimeMillis() - a.lastHit);
+		
+		setEnemyInfo(a, sit);
+		
+		
 		return sit;
 	}
 	
@@ -114,6 +121,22 @@ public class Situation {
 		
 	}
 	
+	
+	public static void setEnemyInfo(FinalAgent a, Situation sit){
+		
+		
+		Tuple2<Vector3f, String> t = HuntBehavior.checkEnemyInSight(a, false);
+		
+		sit.enemyInSight = false;
+		sit.impactProba = 0f;
+		
+		if(t != null){
+			sit.enemyInSight = true;
+			sit.impactProba = a.impactProba(a.getCurrentPosition(), t.getFirst());
+		}
+		
+	}
+	
 	public static float getInterestPointSetValue(ArrayList<InterestPoint> set){
 		float val = 0f;
 		
@@ -125,9 +148,6 @@ public class Situation {
 		
 	}
 	
-	public static void setPrologFields(Situation sit){
-		
-	}
 	
 	
 	
