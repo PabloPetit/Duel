@@ -120,7 +120,7 @@ public class Principal {
 			e.printStackTrace();
 		}
 		
-		/*
+		
 		try {
 
 
@@ -131,7 +131,7 @@ public class Principal {
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
-		*/
+		
 		
 		
 		System.out.println("Agents launched...");

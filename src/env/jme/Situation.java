@@ -85,7 +85,7 @@ public class Situation {
 		sit.lastAction = a.lastAction;
 		
 		sit.life = a.life;
-		sit.timeSinceLastShot = (int) (System.currentTimeMillis() - a.lastHit);
+		sit.timeSinceLastShot = (int) Math.max(0, Math.min(Integer.MAX_VALUE,(System.currentTimeMillis() - a.lastHit))) ;
 		
 		setEnemyInfo(a, sit);
 		

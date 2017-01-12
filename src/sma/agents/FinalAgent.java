@@ -11,6 +11,7 @@ import sma.InterestPoint;
 import sma.actionsBehaviours.DumbBehavior;
 import sma.actionsBehaviours.ExploreBehavior;
 import sma.actionsBehaviours.HuntBehavior;
+import sma.actionsBehaviours.PrologBehavior;
 import sma.actionsBehaviours.TempSphereCast;
 
 public class FinalAgent extends AbstractAgent{
@@ -93,7 +94,8 @@ public class FinalAgent extends AbstractAgent{
 			useProlog = ((boolean)args[1]);
 			
 			if(useProlog){
-				addBehaviour(new ExploreBehavior(this, PERIOD));
+				//addBehaviour(new ExploreBehavior(this, PERIOD));
+				addBehaviour(new PrologBehavior(this,PERIOD));
 			}else{
 				addBehaviour(new DumbBehavior(this, PERIOD));
 			}

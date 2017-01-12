@@ -18,7 +18,7 @@ public class PrologBehavior extends TickerBehaviour {
 	
 	private static final long serialVersionUID = 5739600674796316846L;
 	
-	FinalAgent agent;
+	public static FinalAgent agent;
 	
 	
 	public PrologBehavior(Agent a, long period) {
@@ -30,7 +30,7 @@ public class PrologBehavior extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
-		String prolog = "consult('/requete.pl')";
+		String prolog = "consult('./ressources/prolog/requete.pl')";
 		if (!Query.hasSolution(prolog)) {
 			System.out.println("Cannot open file " + prolog);
 		}
@@ -43,6 +43,7 @@ public class PrologBehavior extends TickerBehaviour {
 				terms.clear();
 				// Get parameters 
 				if (b.equals("explore_off") || b.equals("explore_def")) {
+					terms.add(sit.timeSinceLastShot);
 					terms.add(sit.offSize);
 					terms.add(sit.defSize);
 					terms.add(NewEnv.MAX_DISTANCE);
@@ -55,8 +56,11 @@ public class PrologBehavior extends TickerBehaviour {
 					terms.add(sit.defSize);
 					terms.add(NewEnv.MAX_DISTANCE);
 					terms.add(InterestPoint.INFLUENCE_ZONE);
+					terms.add(sit.enemyInSight);
 				}
 				else if (b.equals("follow") || b.equals("shoot")) {
+					terms.add(sit.life);
+					terms.add(sit.timeSinceLastShot);
 					terms.add(sit.enemyInSight);
 					terms.add(sit.impactProba);
 				}
@@ -65,44 +69,44 @@ public class PrologBehavior extends TickerBehaviour {
 					terms.add(sit.timeSinceLastShot);
 				}
 
-				//String query = prologQuery(b, terms);
-				//if (Query.hasSolution(query)) {
-					// addBehavior
-					// break
-				//}
+				String query = prologQuery(b, terms);
+				if (Query.hasSolution(query)) {
+					System.out.println("has solution");
+				}
 			}
 		}
 	}
 	
 	public String prologQuery(String behavior, ArrayList<Object> terms) {
-		String query = "(" + behavior;
+		String query = behavior + "(";
 		for (Object t: terms) {
-			query += t + ";";
+			query += t + ",";
 		}
+		System.out.println(query.substring(0,query.length() - 1) + ")");
 		return query.substring(0,query.length() - 1) + ")";
 	}
 
-	public void executeExploreOff() {
+	public static void executeExploreOff() {
 		agent.addBehaviour(agent.explore);
 	}
 
-	public void executeExploreDef() {
+	public static void executeExploreDef() {
 		agent.addBehaviour(agent.explore);
 	}
 
-	public void executeHunt() {
+	public static void executeHunt() {
 		agent.addBehaviour(agent.hunt);
 	}
 
-	public void executeFollow() {
+	public static void executeFollow() {
 		//agent.addBehaviour(agent.follow);
 	}
 
-	public void executeShoot() {
+	public static void executeShoot() {
 		//agent.addBehaviour(agent.shoot);
 	}
 
-	public void executeRetreat() {
+	public static void executeRetreat() {
 		//agent.addBehaviour(agent.retreat);
 	}
 
