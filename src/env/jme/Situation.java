@@ -53,7 +53,7 @@ public class Situation {
 	//
 	
 	
-	// TODO :::
+	
 	public String lastAction;
 	
 	public int life;
@@ -63,6 +63,8 @@ public class Situation {
 	public boolean enemyInSight;
 	public float impactProba;
 	
+	
+	public String enemy;
 	
 	
 	
@@ -131,6 +133,7 @@ public class Situation {
 		sit.impactProba = 0f;
 		
 		if(t != null){
+			sit.enemy = t.getSecond();
 			sit.enemyInSight = true;
 			sit.impactProba = a.impactProba(a.getCurrentPosition(), t.getFirst());
 		}

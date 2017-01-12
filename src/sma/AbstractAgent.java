@@ -26,16 +26,16 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	private NewEnv env;
 	
 	
-	public static final float VISION_ANGLE = 180f;
-	public static final float VISION_DISTANCE = 35f;
+	public static final float VISION_ANGLE = 150f;
+	public static final float VISION_DISTANCE = 25f;
 	
-	public static final float NEIGHBORHOOD_DISTANCE = 8f;
+	public static final float NEIGHBORHOOD_DISTANCE = 12f;
 	
 	public static final int CLOSE_PRECISION = 100;
 	public static final int FAR_PRECISION = 1000;
 	
-	public static final int MAX_LIFE = 9;
-	public static final int SHOT_DAMAGE = 3;
+	public static final int MAX_LIFE = 12;
+	public static final int SHOT_DAMAGE = 2;
 	
 	
 	public AbstractAgent() {
@@ -118,9 +118,9 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	/**
 	 * Deploy an agent tagged as a player
 	 */
-	public void deployAgent(NewEnv args) {
+	public void deployAgent(NewEnv args, boolean color) {
 		this.env = args;
-		this.env.deployAgent(getLocalName(), "player");
+		this.env.deployAgent(getLocalName(), "player", color);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class AbstractAgent extends Agent implements EnvironmentManager {
 	 */
 	public void deployEnemy(NewEnv env) {
 		this.env = env;
-		this.env.deployAgent(getLocalName(), "enemy");
+		this.env.deployAgent(getLocalName(), "enemy",false);
 	}
 
 	protected void setup() {

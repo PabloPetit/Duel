@@ -28,7 +28,6 @@ public class DumbBehavior extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		
-		System.out.println("Dumb on report !");
 		
 		ArrayList<Tuple2<Vector3f, String>> enemies = agent.getVisibleAgents(AbstractAgent.VISION_DISTANCE, AbstractAgent.VISION_ANGLE);
 		

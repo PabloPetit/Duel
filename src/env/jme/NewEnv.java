@@ -236,7 +236,7 @@ public class NewEnv extends SimpleApplication {
 		agents.put(agent.getLocalName(), agent);
 	}
 	
-	public synchronized boolean deployAgent(String agentName, String playertype) {
+	public synchronized boolean deployAgent(String agentName, String playertype, boolean color) {
 		if (this.players.containsKey(agentName)) {
 			System.out.println("DeployAgent Error : A player with the name '"+agentName+"' already exists.");
 			return false;
@@ -267,11 +267,11 @@ public class NewEnv extends SimpleApplication {
 			
 			Material mat;
 			
-			FinalAgent f = agents.get(agentName);
+		
 			
-			if (f.useProlog) {
+			if (color) {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
-				mat.setColor("Color", ColorRGBA.Green);
+				
 				
 				Camera cam1 = cam.clone();
 				cam1.setViewPort(0f, .5f, 0f, 0.6f);
@@ -289,7 +289,7 @@ public class NewEnv extends SimpleApplication {
 			}
 			else {
 				mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-				mat.setColor("Color", ColorRGBA.DarkGray);
+				mat.setColor("Color", ColorRGBA.Yellow);
 				
 				
 				Camera cam2 = cam.clone();
@@ -421,6 +421,8 @@ public class NewEnv extends SimpleApplication {
 
 				Random r = new Random();
 				float impact = impactProba(origin, target);
+				
+				System.out.println(agent+" shooting : "+impact);
 
 				if ( r.nextFloat() < impact){
 					// Target shot
@@ -464,7 +466,9 @@ public class NewEnv extends SimpleApplication {
 
 		float altValue = altDiff / 255f;
 
-		return ( distValue * distCoeff + altValue * altCoeff ) * randomness; // If i did it right, shoumd be beetwen 0 and randomness 
+		float proba =  ( distValue * distCoeff + altValue * altCoeff ) * randomness;
+		
+		return  proba;
 	}
 	
 
@@ -475,8 +479,10 @@ public class NewEnv extends SimpleApplication {
 
 		BoundingVolume bv = players.get(enemy).getWorldBound();
 		bv.setCheckPlane(0);
+		
+		Camera cam = ((Camera)players.get(agent).getUserData("cam");
 
-		if (((Camera)players.get(agent).getUserData("cam")).contains(bv).equals(FrustumIntersect.Inside)) { // in angle ??
+		if (cam.getDirection().angleBetween(dir) < AbstractAgent.VISION_ANGLE) { // in angle ??
 			
 			Ray rayTerrain = new Ray(origin, dir);
 			Ray rayPlayers = new Ray(origin, dir);

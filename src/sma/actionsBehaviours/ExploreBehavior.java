@@ -59,7 +59,6 @@ public class ExploreBehavior extends TickerBehaviour {
 	protected void onTick(){
 		
 		if (target == null && !setTarget()){ 
-			System.out.println("No target found");
 			randomMove();
 			return;
 		}
@@ -67,7 +66,7 @@ public class ExploreBehavior extends TickerBehaviour {
 		if (agent.getCurrentPosition().distance(target) < AbstractAgent.NEIGHBORHOOD_DISTANCE){
 			Vector3f nei = findInterestingNeighbor();
 			if(nei != null && agent.getCurrentPosition().distance(nei) < AbstractAgent.NEIGHBORHOOD_DISTANCE / 2f){
-				System.out.println("Better Neighbor");
+				//System.out.println("Better Neighbor");
 				target = nei;
 				agent.moveTo(target);
 			}else{
@@ -122,8 +121,6 @@ public class ExploreBehavior extends TickerBehaviour {
 		if(target != null){
 			agent.goTo(target);
 			targetType = t;
-			System.out.println("New Target : "+target.toString());
-			
 			agent.lastAction = (targetType==Type.Offensive)?Situation.EXPLORE_OFF:Situation.EXPLORE_DEF;
 		}
 		

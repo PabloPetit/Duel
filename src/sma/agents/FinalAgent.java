@@ -52,7 +52,7 @@ public class FinalAgent extends AbstractAgent{
 	protected void setup(){
 		super.setup();
 		
-		addToAgents(this);
+		
 		
 		deploiment();
 		
@@ -63,6 +63,8 @@ public class FinalAgent extends AbstractAgent{
 		this.dead = false;
 		this.lastHit = 0;
 		
+		
+		addToAgents(this);
 		
 		currentBehavior = null;
 		
@@ -106,7 +108,7 @@ public class FinalAgent extends AbstractAgent{
 				addBehaviour(new DumbBehavior(this, PERIOD));
 			}
 			
-			deployAgent((NewEnv) args[0]);
+			deployAgent((NewEnv) args[0], useProlog);
 			
 			System.out.println("Agent "+getLocalName()+" deployed !");
 			

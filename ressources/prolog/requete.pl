@@ -13,7 +13,7 @@ inGoodHealth(life):-
 	life>3.
 
 shotImpact(Probability):-
-	Probability>0.4.
+	Probability>0.1.
 
 /* DECISIONS */
 
@@ -31,18 +31,17 @@ hunt(Life,Time,OffSize,DefSize,Radius,MapWidth,EnemyInSight):-
 	not(EnemyInSight),
 	jpl_call('sma.actionsBehaviours.PrologBehavior',executeHunt,[],@(void)).
 
-toOpenFire(Life,EnemyInSight,P):-
-	inGoodHealth(Life),
+toOpenFire(EnemyInSight,P):-
 	shotImpact(P),
 	EnemyInSight.
 
-attack(Life,EnemyInSight,P):-
-	inGoodHealth(Life),
+attack(EnemyInSight,P):-
 	EnemyInSight,
 	shotImpact(P),
 	jpl_call('sma.actionsBehaviours.PrologBehavior',executeAttack,[],@(void)).
 
-retreat(Life,Time):-
-	not(inGoodHealth(Life)),
-	being_attacked(Time),
-	jpl_call('sma.actionsBehaviours.PrologBehavior',executeRetreat,[],@(void)).
+
+/*retreat(Life,Time):-  */
+/*	not(inGoodHealth(Life)), */
+/*	being_attacked(Time),  */
+/*	jpl_call('sma.actionsBehaviours.PrologBehavior',executeRetreat,[],@(void)). */

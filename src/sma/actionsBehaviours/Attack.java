@@ -14,7 +14,7 @@ public class Attack extends TickerBehaviour{
 	
 	private static final long serialVersionUID = 4340498260100499547L;
 	
-	public static long FORGET_TIME = 4;
+	public static long FORGET_TIME = 35;;
 	
 	FinalAgent agent;
 	
@@ -27,9 +27,11 @@ public class Attack extends TickerBehaviour{
 	public Attack(Agent a, long period, String enemy) {
 		super(a, period);
 		this.enemy = enemy;
-		lastPosition = agent.getEnemyLocation(enemy);
 		agent = (FinalAgent)((AbstractAgent)a);
+		lastPosition = agent.getEnemyLocation(enemy);
+		lastTimeSeen = System.currentTimeMillis();
 		openFire = false;
+		System.out.println("Player Attack");
 	}
 
 	
@@ -38,6 +40,8 @@ public class Attack extends TickerBehaviour{
 	protected void onTick() {
 		
 		askForFirePermission();
+	
+		agent.goTo(lastPosition);
 		
 		if(agent.isVisible(enemy, AbstractAgent.VISION_DISTANCE)){
 			lastTimeSeen = System.currentTimeMillis();
@@ -48,9 +52,8 @@ public class Attack extends TickerBehaviour{
 				System.out.println("Enemy visible, FIRE !");
 				agent.lastAction = Situation.SHOOT;
 				agent.shoot(enemy);
-				agent.stopMoving();
+				
 			}
-			
 			
 		}else{
 			
@@ -60,13 +63,12 @@ public class Attack extends TickerBehaviour{
 				agent.currentBehavior = null;
 			}
 			agent.lastAction = Situation.FOLLOW;
-			agent.goTo(lastPosition);
 			
 		}
 	}
 	
 	public static void askForFirePermission(){
-		String query = "attack("+PrologBehavior.sit.life+","
+		String query = "attack("
 					+PrologBehavior.sit.enemyInSight +","
 					+PrologBehavior.sit.impactProba+")";
 		

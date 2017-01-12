@@ -2,6 +2,9 @@ package sma.actionsBehaviours;
 
 import org.jpl7.Query;
 
+import com.jme3.math.Vector3f;
+
+import dataStructures.tuple.Tuple2;
 import env.jme.NewEnv;
 import env.jme.Situation;
 import jade.core.Agent;
@@ -39,7 +42,7 @@ public class PrologBehavior extends TickerBehaviour {
 		}
 		else {
 			sit = Situation.getCurrentSituation(agent);
-			List<String> behavior = Arrays.asList("explore", "hunt", "attack", "retreat");
+			List<String> behavior = Arrays.asList("explore", "hunt", "attack");
 			ArrayList<Object> terms = new ArrayList<Object>();
 
 			for (String b : behavior) {
@@ -60,7 +63,7 @@ public class PrologBehavior extends TickerBehaviour {
 					terms.add(NewEnv.MAX_DISTANCE);
 					terms.add(sit.enemyInSight);
 				}else if(b.equals("attack")){
-					terms.add(sit.life);
+					//terms.add(sit.life);
 					terms.add(sit.enemyInSight);
 					terms.add(sit.impactProba);
 				}
@@ -100,9 +103,11 @@ public class PrologBehavior extends TickerBehaviour {
 			agent.addBehaviour(h);
 			
 		}else if(nextBehavior == Attack.class){
-			Attack a = new Attack(agent, FinalAgent.PERIOD, HuntBehavior.checkEnemyInSight(agent, false).getSecond());
+			
+			Attack a = new Attack(agent, FinalAgent.PERIOD, sit.enemy);
 			agent.currentBehavior = a;
 			agent.addBehaviour(a);
+			
 		}
 		
 		
