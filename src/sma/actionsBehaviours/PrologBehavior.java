@@ -141,7 +141,7 @@ public class PrologBehavior extends TickerBehaviour {
 
 	public static void executeRetreat() {
 		//System.out.println("retreat");
-		nextBehavior = RetreatBehavior.class;
+		//nextBehavior = RetreatBehavior.class;
 	}
 
 }

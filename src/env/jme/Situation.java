@@ -66,6 +66,7 @@ public class Situation {
 	
 	public String enemy;
 	
+	public boolean victory;
 	
 	
 	public static Situation getCurrentSituation(FinalAgent a){
@@ -91,6 +92,7 @@ public class Situation {
 		
 		setEnemyInfo(a, sit);
 		
+		sit.victory = false;
 		
 		return sit;
 	}
@@ -149,6 +151,22 @@ public class Situation {
 		return val;
 		
 		
+	}
+	
+	public static String getCSVColumns(){
+		return "OffDataSize;DefDataSize;OffDataValue;DefDataValue;AvgAltitude;MinAltitude;MaxAltitude;CurrentAltitude;FovValue;LastAction;Life;ImpactProba";
+		
+	}
+	
+	public String toCSVFile(){
+		String res = "";//getCSVColumns()+"\n";
+		
+		res+=offSize+";"+defSize+";"+offValue+";"+defValue+";"+averageAltitude+";"+minAltitude+";"+maxAltitude+";"+currentAltitude+";"+fovValue+";"+lastAction+";"+life
+				+";"+impactProba+";";
+		
+		res+= (victory)?"VICTORY":"DEFEAT";
+		
+		return res;
 	}
 	
 	

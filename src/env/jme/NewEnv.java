@@ -1,5 +1,7 @@
 package env.jme;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,7 @@ import sma.AbstractAgent;
 import sma.actionsBehaviours.LegalActions;
 import sma.actionsBehaviours.LegalActions.LegalAction;
 import sma.actionsBehaviours.LegalActions.Orientation;
+import sma.actionsBehaviours.PrologBehavior;
 import sma.agents.FinalAgent;
 
 
@@ -436,6 +439,12 @@ public class NewEnv extends SimpleApplication {
 
 						System.out.println(enemy+" killed.");
 						System.out.println("Simulation done");
+						
+						if(!enemy.equals("Player1")){
+							PrologBehavior.sit.victory = true;
+						}
+						
+						saveCSV();
 						System.exit(0);
 					}
 
@@ -450,6 +459,21 @@ public class NewEnv extends SimpleApplication {
 
 		}
 		return false;
+	}
+	
+	public static void saveCSV(){
+		
+		String res = PrologBehavior.sit.toCSVFile();
+		int id = new Random().nextInt(10000);
+		System.out.println(res);
+		try{
+		    PrintWriter writer = new PrintWriter("Simus/Mosimu_"+id+".csv", "UTF-8");
+		    writer.println(res);
+		    writer.close();
+		} catch (IOException e) {
+		  System.out.println("Save Failed");
+		}
+		
 	}
 
 	public synchronized float impactProba(Vector3f origin, Vector3f target){
